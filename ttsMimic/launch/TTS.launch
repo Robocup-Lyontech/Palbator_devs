@@ -1,0 +1,21 @@
+<launch>
+
+
+    <!--
+    Args with no default attribute are not optional
+    -->
+    <arg name="config" default="$(find ttsMimic)/config/config_TTS_Mimic.yaml" doc="Path to parameter config file"/>
+    
+    <!--
+    Node for handling jsgf grammar mode
+    -->
+	<node
+		name="tts_server"
+		pkg="ttsMimic"
+		type="ttsMimicActionServer.py"
+        output="screen"
+        >
+	    <rosparam file="$(arg config)"/>
+	</node>
+   
+</launch>

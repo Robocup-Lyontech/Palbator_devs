@@ -1,0 +1,17 @@
+#JSGF V1.0;
+
+/**
+ * JSGF Grammar for Turtle example
+ */
+
+ grammar cleanup;
+
+ public <cleanupRule> = [<action>] [<the>] <room> | <confirmation>;
+
+ <room> = BEDROOM | ENTRANCE | KITCHEN | LIVING ROOM;
+
+ <action> = GO TO | YOU HAVE TO GO TO;
+
+ <the> = THE;
+
+ <confirmation> = YES | NO;

@@ -1,0 +1,11 @@
+<launch>
+        <arg name="config" default="$(find speechToTextPalbator)/config/config_audio.yaml" doc="Path to parameter config file"/>
+        <node
+            name="audio_control"
+            pkg="speechToTextPalbator"
+            type="send_audio.py"
+            output="screen"
+            >
+	        <rosparam file="$(arg config)"/>
+        </node>
+</launch>

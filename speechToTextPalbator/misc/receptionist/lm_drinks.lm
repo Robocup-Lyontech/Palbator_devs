@@ -1,0 +1,74 @@
+Language model created by QuickLM on Tue Feb 18 04:46:30 EST 2020
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 10 sentences and 15 words
+
+\data\
+ngram 1=15
+ngram 2=23
+ngram 3=13
+
+\1-grams:
+-1.8195 7 -0.2944
+-0.8195 </s> -0.3010
+-0.8195 <s> -0.2297
+-1.8195 COKE -0.2297
+-1.8195 DR -0.2944
+-1.8195 FANTA -0.2297
+-1.8195 ICE -0.2944
+-1.8195 OASIS -0.2297
+-1.8195 ORANGINA -0.2297
+-1.8195 PEPPER -0.2297
+-1.8195 PEPSI -0.2297
+-1.8195 SCHWEPPS -0.2297
+-1.8195 SPRITE -0.2297
+-1.8195 TEA -0.2297
+-1.8195 UP -0.2297
+
+\2-grams:
+-0.3010 7 UP 0.0000
+-1.3010 <s> 7 0.0000
+-1.3010 <s> COKE 0.0000
+-1.3010 <s> DR 0.0000
+-1.3010 <s> FANTA 0.0000
+-1.3010 <s> ICE 0.0000
+-1.3010 <s> OASIS 0.0000
+-1.3010 <s> ORANGINA 0.0000
+-1.3010 <s> PEPSI 0.0000
+-1.3010 <s> SCHWEPPS 0.0000
+-1.3010 <s> SPRITE 0.0000
+-0.3010 COKE </s> -0.3010
+-0.3010 DR PEPPER 0.0000
+-0.3010 FANTA </s> -0.3010
+-0.3010 ICE TEA 0.0000
+-0.3010 OASIS </s> -0.3010
+-0.3010 ORANGINA </s> -0.3010
+-0.3010 PEPPER </s> -0.3010
+-0.3010 PEPSI </s> -0.3010
+-0.3010 SCHWEPPS </s> -0.3010
+-0.3010 SPRITE </s> -0.3010
+-0.3010 TEA </s> -0.3010
+-0.3010 UP </s> -0.3010
+
+\3-grams:
+-0.3010 7 UP </s>
+-0.3010 <s> 7 UP
+-0.3010 <s> COKE </s>
+-0.3010 <s> DR PEPPER
+-0.3010 <s> FANTA </s>
+-0.3010 <s> ICE TEA
+-0.3010 <s> OASIS </s>
+-0.3010 <s> ORANGINA </s>
+-0.3010 <s> PEPSI </s>
+-0.3010 <s> SCHWEPPS </s>
+-0.3010 <s> SPRITE </s>
+-0.3010 DR PEPPER </s>
+-0.3010 ICE TEA </s>
+
+\end\

@@ -1,0 +1,34 @@
+<launch>
+
+
+    <!--
+    Args with no default attribute are not optional
+    -->
+    <arg name="config" default="$(find speechToTextPalbator)/config/config.yaml" doc="Path to parameter config file"/>
+    
+    <!--
+    Node for handling jsgf grammar mode
+    -->
+	<node
+		name="stt_offline"
+		pkg="speechToTextPalbator"
+		type="sttOfflineServer.py"
+        output="screen"
+        >
+	<rosparam file="$(arg config)"/>
+        <remap from="jsgf_audio" to="sphinx_audio" />
+	</node>
+
+    <!--
+    Node for publishing audio inputs
+    -->
+    <node
+        name="audio_control"
+        pkg="speechToTextPalbator"
+        type="send_audio.py"
+        output="screen"
+        >
+	<rosparam file="$(arg config)"/>
+    </node>
+
+</launch>

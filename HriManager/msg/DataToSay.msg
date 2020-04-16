@@ -1,0 +1,2 @@
+string json_in_string
+string data_to_use_in_string

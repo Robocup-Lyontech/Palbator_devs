@@ -1,0 +1,8 @@
+#Configuration file for TTS Mimic node
+
+#output mode for TTS : "record" to save the speech in file or "default" to hear it speak
+output_mode: "default"
+
+action_TTS_server_name: "action_TTS_MIMIC"
+
+path_dir_for_records: ""

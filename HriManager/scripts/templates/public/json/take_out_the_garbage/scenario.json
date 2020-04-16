@@ -1,0 +1,355 @@
+{
+  "duration": 300,
+  "variables": {},
+  "steps": [
+    {
+      "name": "Go to the first bin",
+      "order": 0,
+      "eta": 30,
+      "arguments": {},
+      "action": "",
+      "id": "GotoB1"
+    },
+    {
+      "name": "Get Pepper's location",
+      "order": 1,
+      "eta": 0,
+      "arguments": {
+        "what": "location",
+        "which": "Pepper"
+      },
+      "action": "find",
+      "id": "gotob1_get-pepper's-location"
+    },
+    {
+      "name": "Go to the first bin",
+      "order": 2,
+      "eta": 0,
+      "speech": {
+        "title": "I'm going to the first bin."
+      },
+      "arguments": {
+        "location": "bin1"
+      },
+      "action": "goTo",
+      "id": "gotob1_go-to-the-first-bin"
+    },
+    {
+      "name": "Take the first bin",
+      "order": 3,
+      "eta": 45,
+      "arguments": {},
+      "action": "",
+      "id": "TakeB1"
+    },
+    {
+      "name": "Call human",
+      "order": 4,
+      "eta": 0,
+      "speech": {
+        "said": "Hey referee, please come to me and then say next or click the button",
+        "description": "Say next or click the button",
+        "title": "Referee, please come here"
+      },
+      "arguments": {
+        "who": "referee"
+      },
+      "action": "callHuman",
+      "id": "takeb1_call-human"
+    },
+    {
+      "name": "Explain how to prepare the bag",
+      "order": 5,
+      "eta": 0,
+      "speech": {
+        "said": "Look at the video and reproduce gestures.",
+        "description": "W;X;C;V",
+        "title": "Look at the video and reproduce gestures."
+      },
+      "arguments": {
+        "what": "prepareBag"
+      },
+      "action": "showVideo",
+      "id": "takeb1_explain-how-to-prepare-the-bag"
+    },
+    {
+      "name": "Explain how to put the bag into Pepper's hand",
+      "order": 6,
+      "eta": 0,
+      "speech": {
+        "said": "Look at the video and reproduce gestures.",
+        "description": "Q; S; D; F",
+        "title": "Look at the video and reproduce gestures."
+      },
+      "arguments": {
+        "what": "takeBag",
+        "hand": "right"
+      },
+      "action": "showVideo",
+      "id": "takeb1_explain-how-to-put-the-bag-into-pepper's-hand"
+    },
+    {
+      "name": "Grab the bag",
+      "order": 7,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "closeHand",
+      "id": "takeb1_grab-the-bag"
+    },
+    {
+      "name": "Check if the bag is well held",
+      "order": 8,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "checkBag",
+      "id": "takeb1_check-if-the-bag-is-well-held"
+    },
+    {
+      "name": "Carry the first bin",
+      "order": 9,
+      "eta": 60,
+      "arguments": {},
+      "action": "",
+      "id": "CarryB1"
+    },
+    {
+      "name": "Go to the collection zone",
+      "order": 10,
+      "eta": 0,
+      "speech": {
+        "said": "I'm going to the collection zone",
+        "title": "I'm going to the collection zone"
+      },
+      "arguments": {
+        "location": "collectionZone"
+      },
+      "action": "goTo",
+      "id": "carryb1_go-to-the-collection-zone"
+    },
+    {
+      "name": "Check if the bag is still here",
+      "order": 11,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "checkBag",
+      "id": "carryb1_check-if-the-bag-is-still-here"
+    },
+    {
+      "name": "Drop the first bin",
+      "order": 12,
+      "eta": 10,
+      "arguments": {},
+      "action": "",
+      "id": "DropB1"
+    },
+    {
+      "name": "Hold the bag above the collection zone",
+      "order": 13,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "holdBag",
+      "id": "dropb1_hold-the-bag-above-the-collection-zone"
+    },
+    {
+      "name": "Open the hand",
+      "order": 14,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "openHand",
+      "id": "dropb1_open-the-hand"
+    },
+    {
+      "name": "Go to the second bin",
+      "order": 15,
+      "eta": 40,
+      "arguments": {},
+      "action": "",
+      "id": "GotoB2"
+    },
+    {
+      "name": "Get Pepper's location",
+      "order": 16,
+      "eta": 0,
+      "arguments": {
+        "what": "location",
+        "which": "Pepper"
+      },
+      "action": "find",
+      "id": "gotob2_get-pepper's-location"
+    },
+    {
+      "name": "Go to the second bin",
+      "order": 17,
+      "eta": 0,
+      "speech": {
+        "title": "I'm going to the second bin."
+      },
+      "arguments": {
+        "location": "bin2"
+      },
+      "action": "goTo",
+      "id": "gotob2_go-to-the-second-bin"
+    },
+    {
+      "name": "Take the second bin",
+      "order": 18,
+      "eta": 45,
+      "arguments": {},
+      "action": "",
+      "id": "TakeB2"
+    },
+    {
+      "name": "Call human",
+      "order": 19,
+      "eta": 0,
+      "speech": {
+        "said": "Hey referee, please come to me and then say next or click the button",
+        "description": "Say next or click the button",
+        "title": "Referee, please come here"
+      },
+      "arguments": {
+        "who": "referee"
+      },
+      "action": "callHuman",
+      "id": "takeb2_call-human"
+    },
+    {
+      "name": "Explain how to prepare the bag",
+      "order": 20,
+      "eta": 0,
+      "speech": {
+        "said": "Look at the video and reproduce gestures.",
+        "description": "W;X;C;V",
+        "title": "Look at the video and reproduce gestures."
+      },
+      "arguments": {
+        "what": "prepareBag"
+      },
+      "action": "showVideo",
+      "id": "takeb2_explain-how-to-prepare-the-bag"
+    },
+    {
+      "name": "Explain how to put the bag into Pepper's hand",
+      "order": 21,
+      "eta": 0,
+      "speech": {
+        "said": "Look at the video and reproduce gestures.",
+        "description": "Q; S; D; F",
+        "title": "Look at the video and reproduce gestures."
+      },
+      "arguments": {
+        "what": "takeBag",
+        "hand": "right"
+      },
+      "action": "showVideo",
+      "id": "takeb2_explain-how-to-put-the-bag-into-pepper's-hand"
+    },
+    {
+      "name": "Grab the bag",
+      "order": 22,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "closeHand",
+      "id": "takeb2_grab-the-bag"
+    },
+    {
+      "name": "Check if the bag is well held",
+      "order": 23,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "checkBag",
+      "id": "takeb2_check-if-the-bag-is-well-held"
+    },
+    {
+      "name": "Carry the second bin",
+      "order": 24,
+      "eta": 60,
+      "arguments": {},
+      "action": "",
+      "id": "CarryB2"
+    },
+    {
+      "name": "Go to the collection zone",
+      "order": 25,
+      "eta": 0,
+      "speech": {
+        "said": "I'm going to the collection zone",
+        "title": "I'm going to the collection zone"
+      },
+      "arguments": {
+        "location": "collectionZone"
+      },
+      "action": "goTo",
+      "id": "carryb2_go-to-the-collection-zone"
+    },
+    {
+      "name": "Check if the bag is still here",
+      "order": 26,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "checkBag",
+      "id": "carryb2_check-if-the-bag-is-still-here"
+    },
+    {
+      "name": "Drop the second bin",
+      "order": 27,
+      "eta": 10,
+      "arguments": {},
+      "action": "",
+      "id": "DropB2"
+    },
+    {
+      "name": "Hold the bag above the collection zone",
+      "order": 28,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "holdBag",
+      "id": "dropb2_hold-the-bag-above-the-collection-zone"
+    },
+    {
+      "name": "Open the hand",
+      "order": 29,
+      "eta": 0,
+      "arguments": {
+        "hand": "right"
+      },
+      "action": "openHand",
+      "id": "dropb2_open-the-hand"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 53,
+      "eta": 0,
+      "arguments": {},
+      "action": "",
+      "id": "FinishScenario"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 54,
+      "eta": 0,
+      "arguments": {},
+      "action": "finishScenario",
+      "id": "finishscenario_finish-scenario"
+    }
+  ],
+  "name": "Take Out the Garbage"
+}

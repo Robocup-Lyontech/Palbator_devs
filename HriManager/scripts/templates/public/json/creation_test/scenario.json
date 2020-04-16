@@ -1,0 +1,130 @@
+{
+  "duration": 300,
+  "variables": {
+    "john": {
+      "drink": "fanta",
+      "name": "John"
+    }
+  },
+  "steps": [
+    {
+      "name": "Wait and validation",
+      "order": 0,
+      "eta": 15,
+      "arguments": {},
+      "action": "",
+      "id": "WaitAndValidate_id"
+    },
+    {
+      "name": "Wait",
+      "order": 1,
+      "eta": 0,
+      "speech": {
+        "said": "I'm waiting for the referee",
+        "title": "Creation description"
+      },
+      "arguments": {
+        "time": 3
+      },
+      "action": "wait",
+      "id": "creatin-descrpition_id"
+    },
+    {
+      "name": "Person validation",
+      "order": 2,
+      "eta": 0,
+      "speech": {
+        "said": "Hey referee, could you please open the door, and then say \"Next\", or click on the button?",
+        "description": "Say \"Next\" or click on the button",
+        "title": "Please valide"
+      },
+      "arguments": {},
+      "action": "askOpenDoor",
+      "id": "personValidation_id"
+    },
+    {
+      "name": "Welcome message",
+      "order": 3,
+      "eta": 10,
+      "arguments": {},
+      "action": "",
+      "id": "welcomeMessage_id"
+    },
+    {
+      "name": "Wait and validate",
+      "order": 4,
+      "eta": 0,
+      "speech": {
+        "said": "I'm waiting for the referee",
+        "title": "Welcome here"
+      },
+      "arguments": {
+        "time": 10
+      },
+      "action": "wait",
+      "id": "waitAndValidate_id"
+    },
+    {
+      "name": "Display name",
+      "order": 5,
+      "eta": 10,
+      "arguments": {},
+      "action": "",
+      "id": "displayName_id"
+    },
+    {
+      "name": "Ask name",
+      "order": 6,
+      "eta": 0,
+      "speech": {
+        "said": "What's your name?",
+        "title": "What's your name?"
+      },
+      "arguments": {
+        "who": "Guest 1"
+      },
+      "action": "askName",
+      "id": "askinfog1_ask-name"
+    },
+    {
+      "name": "Last wait",
+      "order": 7,
+      "eta": 10,
+      "arguments": {},
+      "action": "",
+      "id": "last_wait_id"
+    },
+    {
+      "name": "Go to space room",
+      "order": 8,
+      "eta": 0,
+      "speech": {
+        "said": "I'm traveling to the living room",
+        "title": "I'm traveling to the space room"
+      },
+      "arguments": {
+        "interestPoint": "GPRS_PEOPLE_LIVINGROOM_It0",
+        "location": "livingRoom"
+      },
+      "action": "goTo",
+      "id": "gotolr1_go-to-space-room_id"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 9,
+      "eta": 0,
+      "arguments": {},
+      "action": "",
+      "id": "FinishScenario"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 10,
+      "eta": 0,
+      "arguments": {},
+      "action": "finishScenario",
+      "id": "finishscenario_finish-scenario"
+    }
+  ],
+  "name": "Creation"
+}

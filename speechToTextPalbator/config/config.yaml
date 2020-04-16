@@ -1,0 +1,54 @@
+#Config file for pocketsphinx
+
+#Paths for asr_test.py
+#dict: "/home/student/Bureau/workspace_test_speech2/src/own_speech_recognition/misc/custom_thomas/dict_custom_v0.dic"
+#dict: "/home/student/Bureau/workspace_test_speech2/src/pocketsphinx/misc/dict_fr.dic"
+
+#lm: "/home/student/Bureau/workspace_test_speech2/src/own_speech_recognition/misc/custom_thomas/lm_custom_v0.lm"
+#lm: ":default"
+#lm: "/home/student/Bureau/workspace_test_speech2/src/pocketsphinx/misc/lm_french.lm"
+
+# TO USE GRAMMAR MODE, PLEASE SET A PATH TO A DIRECTORY WHERE YOU HAVE FSG AND GRAM FILES
+gram: "gram"
+#"/home/student/Bureau/workspace_test_speech2/src/pocketsphinx/misc/asr_thomas"
+#"/home/student/Bureau/workspace_test_speech2/src/pocketsphinx/misc/asr_thomas.gram"
+
+#PATH TO YOUR pocketsphinx/model directory
+#hmm: "/usr/local/share/pocketsphinx/model/en-us/en-us/"
+hmm: "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us"
+#hmm: "/usr/local/share/pocketsphinx/model/fr_FR/french_f0/"
+
+grammar: "asr"
+#"asr"
+
+rule: ":default"
+#rule: "rule"
+
+#Input WAV file path for send_audio.py
+input: ":default"
+
+dict: '../misc/custom_receptionist/dic_global.dic'
+
+#"names": '../misc/custom_receptionist/dic_names.dic',
+#"age": "../misc/custom_receptionist/dic_age.dic",
+#"drinks": "../misc/custom_receptionist/dic_drinks.dic",
+#"confirmation": "../misc/custom_receptionist/dic_confirmation_v2.dic",
+#"next": "../misc/custom_receptionist/dic_confirmation_v2.dic",
+
+
+
+lm: "../misc/custom_receptionist/lm_global.lm"
+#"names": "../misc/custom_receptionist/lm_names.lm",
+#"age": "../misc/custom_receptionist/lm_age.lm",
+#"drinks": "../misc/custom_receptionist/lm_drinks.lm",
+#"confirmation": "../misc/custom_receptionist/lm_confirmation_v2.lm",
+#"next": "../misc/custom_receptionist/lm_confirmation_v2.lm",
+
+
+database: {
+    "names": "../misc/custom_receptionist/corpus_names.txt",
+    "age": "../misc/custom_receptionist/corpus_age.txt",
+    "drinks": "../misc/custom_receptionist/corpus_boisson.txt",
+    "confirmation": "../misc/custom_receptionist/corpus_confirmation.txt",
+    "next": "../misc/custom_receptionist/corpus_next.txt"
+}

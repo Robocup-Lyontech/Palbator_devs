@@ -1,0 +1,19 @@
+<launch>
+    <!--
+    Args with no default attribute are not optional
+    -->
+    <arg name="config" default="$(find connectionManager)/config/config_connection.yaml" doc="Path to parameter config file"/>
+    
+    <!--
+    Node for handling jsgf grammar mode
+    -->
+	<node
+		name="connection_state_manager"
+		pkg="connectionManager"
+		type="check_connection_ROS_v2.py"
+        output="screen"
+        >
+	    <rosparam file="$(arg config)"/>
+	</node>
+   
+</launch>

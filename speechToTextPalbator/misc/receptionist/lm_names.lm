@@ -1,0 +1,65 @@
+Language model created by QuickLM on Tue Feb 18 04:43:14 EST 2020
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 10 sentences and 12 words
+
+\data\
+ngram 1=12
+ngram 2=20
+ngram 3=10
+
+\1-grams:
+-0.7782 </s> -0.3010
+-0.7782 <s> -0.2218
+-1.7782 AMY -0.2218
+-1.7782 BILL -0.2218
+-1.7782 CLARA -0.2218
+-1.7782 JACK -0.2218
+-1.7782 JOHN -0.2218
+-1.7782 MATT -0.2218
+-1.7782 NEO -0.2218
+-1.7782 RORY -0.2218
+-1.7782 ROSE -0.2218
+-1.7782 SALLY -0.2218
+
+\2-grams:
+-1.3010 <s> AMY 0.0000
+-1.3010 <s> BILL 0.0000
+-1.3010 <s> CLARA 0.0000
+-1.3010 <s> JACK 0.0000
+-1.3010 <s> JOHN 0.0000
+-1.3010 <s> MATT 0.0000
+-1.3010 <s> NEO 0.0000
+-1.3010 <s> RORY 0.0000
+-1.3010 <s> ROSE 0.0000
+-1.3010 <s> SALLY 0.0000
+-0.3010 AMY </s> -0.3010
+-0.3010 BILL </s> -0.3010
+-0.3010 CLARA </s> -0.3010
+-0.3010 JACK </s> -0.3010
+-0.3010 JOHN </s> -0.3010
+-0.3010 MATT </s> -0.3010
+-0.3010 NEO </s> -0.3010
+-0.3010 RORY </s> -0.3010
+-0.3010 ROSE </s> -0.3010
+-0.3010 SALLY </s> -0.3010
+
+\3-grams:
+-0.3010 <s> AMY </s>
+-0.3010 <s> BILL </s>
+-0.3010 <s> CLARA </s>
+-0.3010 <s> JACK </s>
+-0.3010 <s> JOHN </s>
+-0.3010 <s> MATT </s>
+-0.3010 <s> NEO </s>
+-0.3010 <s> RORY </s>
+-0.3010 <s> ROSE </s>
+-0.3010 <s> SALLY </s>
+
+\end\

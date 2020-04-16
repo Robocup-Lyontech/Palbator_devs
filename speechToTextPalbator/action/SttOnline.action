@@ -1,0 +1,8 @@
+#goal definition
+string order
+---
+#result definition
+string stt_result
+---
+#feedback
+string stt_feedback

@@ -1,0 +1,111 @@
+{
+  "duration": 3000,
+  "variables": {},
+  "steps": [
+    {
+      "name": "Wait door openning",
+      "order": 0,
+      "eta": 30,
+      "arguments": {},
+      "action": "",
+      "id": "waitDoorOpening"
+    },
+    {
+      "name": "detect Door Opening",
+      "order": 1,
+      "eta": 0,
+      "speech": {
+        "title": "I'm waiting for the referee"
+      },
+      "arguments": {
+        "what": "door"
+      },
+      "action": "detectOpening",
+      "id": "detectDoorOpening"
+    },
+    {
+      "name": "Go to jury",
+      "order": 2,
+      "eta": 100,
+      "speech": {
+        "description": "Say \"Next\" or click on the button",
+        "title": "Please open the door"
+      },
+      "arguments": {},
+      "action": "",
+      "id": "gotoJury_title"
+    },
+    {
+      "name": "gotoJury",
+      "order": 3,
+      "eta": 0,
+      "speech": {
+        "said": "Did you say your name was {name}?",
+        "title": "Did you say your name was {name}?"
+      },
+      "arguments": {
+        "location": "jury"
+      },
+      "action": "goto",
+      "id": "gotoJury_goto"
+    },
+    {
+      "name": "Wait Inspection",
+      "order": 4,
+      "eta": 70,
+      "speech": {
+        "said": "Welcome here first guest, come close to me so I can ask you some questions",
+        "title": "Hello \"first guest\", please come here"
+      },
+      "arguments": {},
+      "action": "",
+      "id": "waitInspection_title"
+    },
+    {
+      "name": "Wait click to continu",
+      "order": 5,
+      "eta": 0,
+      "speech": {
+        "said": "Please do the inspection then click on the button"
+      },
+      "arguments": {},
+      "action": "callHuman",
+      "id": "waitInspection_click"
+    },
+    {
+      "name": "Go to Entrance",
+      "order": 6,
+      "eta": 100,
+      "speech": {
+        "said": "What's your name?",
+        "title": "What's your name?"
+      },
+      "arguments": {},
+      "action": "",
+      "id": "goToEntrance_title"
+    },
+    {
+      "name": "gotoEntrance",
+      "order": 7,
+      "eta": 0,
+      "speech": {
+        "said": "Did you say your name was {name}?",
+        "title": "Did you say your name was {name}?"
+      },
+      "arguments": {
+        "location": "entrance"
+      },
+      "action": "goTo",
+      "id": "gotoJury_goto"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 8,
+      "eta": 0,
+      "arguments": {},
+      "action": "",
+      "id": "FinishScenario"
+    }
+  ],
+  "name": "Inspection"
+}

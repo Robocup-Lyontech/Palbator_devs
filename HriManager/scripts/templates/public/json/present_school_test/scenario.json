@@ -1,0 +1,122 @@
+{
+  "duration": 300,
+  "variables": {
+    "john": {
+      "drink": "fanta",
+      "name": "John"
+    }
+  },
+  "steps": [
+    {
+      "name": "Present school and Choose speciality",
+      "order": 0,
+      "eta": 20,
+      "arguments": {},
+      "action": "",
+      "id": "PresentSchandChooseSpe"
+    },
+    {
+      "name": "Present school",
+      "order": 1,
+      "eta": 0,
+      "speech": {
+        "said": "Please read the description below for any information about CPE",
+        "description": "The Engineering School of Chemistry and Digital Sciences CPE Lyon (also known as ESCPE Lyon or CPE Lyon for chemistry, physics, electronics) is one of the 205 French engineering schools accredited as of September 1, 2018 to deliver an engineering degree2. click on the button",
+        "title": "School Description"
+      },
+      "arguments": {},
+      "action": "askOpenDoor",
+      "id": "present-school"
+    },
+    {
+      "name": "Choose Speciality",
+      "order": 2,
+      "eta": 0,
+      "speech": {
+        "said": "What's your name?",
+        "title": "Which specialty are you interested in?"
+      },
+      "arguments": {
+        "who": "Speciality"
+      },
+      "action": "askSpeciality",
+      "id": "choose_speciality"
+    },
+    {
+      "name": "Confirm Speciality",
+      "order": 3,
+      "eta": 0,
+      "speech": {
+        "said": "Did you say your speciality was {name}?",
+        "title": "Did you say your speciality was {name}?"
+      },
+      "arguments": {
+        "what": "{name}",
+        "who": "Guest 2"
+      },
+      "action": "confirm",
+      "id": "askinfo_confirm-speciality",
+      "indexFailure":2
+    },
+    {
+      "name": "Display info and navigate",
+      "order": 4,
+      "eta": 20,
+      "arguments": {},
+      "action": "",
+      "id": "DisplayInfNavigate"
+    },
+    {
+      "name": "Display Info",
+      "order": 5,
+      "eta": 0,
+      "speech": {
+        "said": "Hey referee, could you please open the door, and then say \"Next\", or click on the button?",
+        "description1": "La spécialité ETI propose 5 majeures : Robotique, Imagerie, Electronique, Informatique et Réseaux",
+        "description2": "La spécialité CGP c'est pas terrible",
+        "title": "Speciality Description"
+      },
+      "arguments": {},
+      "action": "displayInfo",
+      "id": "displayinf"
+    },
+    {
+      "name": "Go to lobby",
+      "order": 6,
+      "eta": 0,
+      "speech": {
+        "said": "I'm traveling to the living room",
+        "title": "I'm traveling to the lobby"
+      },
+      "arguments": {
+        "interestPoint": "GPRS_PEOPLE_LIVINGROOM_It0",
+        "location": "lobby"
+      },
+      "action": "goTo",
+      "id": "gotolr1_go-to-lobby"
+    },
+    {
+      "name": "Wait",
+      "order": 7,
+      "eta": 0,
+      "speech": {
+        "said": "I'm waiting for the referee",
+        "title": "I'm waiting for someone to end this scenario"
+      },
+      "arguments": {
+        "time": 3
+      },
+      "action": "wait",
+      "id": "wait_end_scenario"
+    },
+    {
+      "name": "Finish Scenario",
+      "order": 8,
+      "eta": 0,
+      "arguments": {},
+      "action": "",
+      "id": "FinishScenario"
+    }
+  ],
+  "name": "Present School"
+}

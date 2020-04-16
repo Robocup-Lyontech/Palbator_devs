@@ -1,0 +1,41 @@
+###### SOCKET PARAMETERS ######
+socketIO_IP: 'http://127.0.0.1'
+
+socketIO_port: 5000
+
+socket_choose_scenario: 'askToChangeScenarioHRIM'
+
+socket_scenario_loaded: 'scenarioCharged'
+
+socket_index_view_received: 'indexDataReceivedJS'
+
+socket_data_received: 'dataReceivedJS'
+
+socket_view_loaded: 'launchedView'
+
+socket_hri_reset: 'resetHRI'
+
+socket_emit_step_complete: 'CompleteStep'
+
+socket_emit_current_step: 'stepCurrent'
+
+socket_emit_start_timer: 'startTimer'
+
+socket_emit_scenario_to_charge: 'scenarioToCharged'
+
+socket_emit_restart_hri: 'restartHRI'
+
+####### HRI PARAMETERS ########
+topic_choice_scenario: "choice_scenario"
+
+stt_online: "action_STT_online"
+
+stt_offline: "action_STT_offline"
+
+tts_mimic: "action_TTS_MIMIC"
+
+action_server_hri: "action_GmToHri"
+
+topic_connection_state: "connection_state"
+
+enable_STT: True

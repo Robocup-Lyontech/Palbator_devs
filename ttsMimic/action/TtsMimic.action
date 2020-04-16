@@ -1,0 +1,8 @@
+#goal definition
+string text_to_say
+---
+#result definition
+string tts_result
+---
+#feedback
+string tts_feedback

@@ -1,0 +1,9 @@
+#Configuration file for ConnectionManager
+
+connection_state_publisher_name: 'connection_state'
+
+hostname_server: "one.one.one.one"
+
+port: 80
+
+connection_timeout: 2

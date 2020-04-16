@@ -1,0 +1,68 @@
+#Config file for Offline Speech Recognition server and audio recorder
+
+############### Audio Recorder configuration ################
+
+config_recorder: {
+    audio_record_dir: '../misc/records',
+    convert_rate: 16000,
+    convert_width: 2,
+    tts_service: 'action_TTS_MIMIC',
+    ajusting_ambient_noise_duration: 1,
+    listen_timeout: 5,
+    listen_phrase_time_limit: 5
+}
+
+
+############### Speech Recognition servers configuration ##########
+
+hmm: "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us"
+
+config: {
+    receptionist: {
+        dict: '../misc/receptionist/asr.dict',
+        kwlist: '../misc/receptionist/asr.kwlist',
+        gram: "../misc/receptionist/asr",
+        grammar: "asr",
+        rule: "rule",
+        database: {
+            "names": "../misc/receptionist/corpus_names.txt",
+            "age": "../misc/receptionist/corpus_age.txt",
+            "drinks": "../misc/receptionist/corpus_boisson.txt",
+            "confirmation": "../misc/receptionist/corpus_confirmation.txt",
+            "next": "../misc/receptionist/corpus_next.txt"
+        }
+    },
+    cleanup: {
+        dict: '../misc/cleanup/cleanup.dict',
+        kwlist: '../misc/cleanup/cleanup.kwlist',
+        gram: "../misc/cleanup/cleanup",
+        grammar: "cleanup",
+        rule: "cleanupRule",
+        database: {
+            "room": "../misc/cleanup/room.txt",
+            "confirmation": "../misc/cleanup/confirmation.txt"
+        }
+    }
+}
+
+parser_action_database: {
+    receptionist: {
+        askAge: 'age',
+        askDrink: 'drinks',
+        askName: 'names',
+        confirm: 'confirmation',
+        askOpenDoor: "next"
+    },
+    cleanup: {
+        askRoom: 'room',
+        confirm: 'confirmation'
+    }
+}
+
+############### ROS configuration ################
+
+stt_offline_server_name: "action_STT_offline"
+
+stt_online_server_name: "action_STT_online"
+
+tts_server_name: "action_TTS_MIMIC"

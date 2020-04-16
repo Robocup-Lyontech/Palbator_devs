@@ -1,0 +1,35 @@
+#Config file for pocketsphinx
+
+#PATH TO YOUR pocketsphinx/model directory
+#hmm: "/usr/local/share/pocketsphinx/model/en-us/en-us/"
+hmm: "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us"
+#hmm: "/usr/local/share/pocketsphinx/model/fr_FR/french_f0/"
+
+grammar: "asr"
+#"asr"
+
+rule: "rule"
+#rule: "rule"
+
+gram: "../misc/data_recep/asr"
+
+#Input WAV file path for send_audio.py
+# input: ":default"
+
+dict: '../misc/data_recep/asr.dict'
+
+#"names": '../misc/custom_receptionist/dic_names.dic',
+#"age": "../misc/custom_receptionist/dic_age.dic",
+#"drinks": "../misc/custom_receptionist/dic_drinks.dic",
+#"confirmation": "../misc/custom_receptionist/dic_confirmation_v2.dic",
+#"next": "../misc/custom_receptionist/dic_confirmation_v2.dic",
+
+kwlist: '../misc/data_recep/asr.kwlist'
+
+database: {
+    "names": "../misc/custom_receptionist/corpus_names.txt",
+    "age": "../misc/custom_receptionist/corpus_age.txt",
+    "drinks": "../misc/custom_receptionist/corpus_boisson.txt",
+    "confirmation": "../misc/custom_receptionist/corpus_confirmation.txt",
+    "next": "../misc/custom_receptionist/corpus_next.txt"
+}

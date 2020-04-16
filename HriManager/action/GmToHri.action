@@ -1,0 +1,8 @@
+#goal
+string json_request
+---
+#result
+string Gm_To_Hri_output
+---
+#feedback
+string Gm_To_Hri_feedback
