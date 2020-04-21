@@ -27,8 +27,24 @@ class HRIManager:
     rospy.init_node("ROS_HRI_node",anonymous=True)
 
     self.setup_config_yaml()
-    
+    self.init_socket_listeners()
+
+    self.view_launcher=Views(self.socketIO)
+
+    rospy.on_shutdown(self.shutdown)
+
+
+    self.init_variables()
+
     self.connection_ON=None
+    self.action_GM_TO_HRI_server.start()
+    self.enable_changing_connection=True
+    self.sub_connection_state = rospy.Subscriber(rospy.get_param('~topic_connection_state'),String,self.handle_change_connection_state)
+    rospy.loginfo("{class_name} : Waiting for connection state message ...".format(class_name=self.__class__.__name__))
+    rospy.wait_for_message(rospy.get_param('~topic_connection_state'),String)
+    rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED'.format(class_name=self.__class__.__name__))
+
+  def init_variables(self):
     self.nameToUse=[]
     self.drinkToUse=[]
     self.ageToUse = []
@@ -52,16 +68,12 @@ class HRIManager:
     self.enable_choice_scenario=True
     self.event_touch = False
 
-    self.init_socket_listeners()
+    self.loaded_steps = None
+  
+  def shutdown(self):
+    rospy.logwarn("{class_name} : HRI Manager shutting down ...".format(class_name=self.__class__.__name__))
+    self.socketIO.disconnect()
 
-    self.view_launcher=Views(self.socketIO)
-
-    self.action_GM_TO_HRI_server.start()
-    self.enable_changing_connection=True
-    self.sub_connection_state = rospy.Subscriber(rospy.get_param('~topic_connection_state'),String,self.handle_change_connection_state)
-    rospy.loginfo("{class_name} : Waiting for connection state message ...".format(class_name=self.__class__.__name__))
-    rospy.wait_for_message(rospy.get_param('~topic_connection_state'),String)
-    rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED'.format(class_name=self.__class__.__name__))
 
   def setup_config_yaml(self):
     """
@@ -76,6 +88,8 @@ class HRIManager:
     _stt_offline_server_name = rospy.get_param("~stt_offline")
     _tts_mimic_server_name = rospy.get_param("~tts_mimic")
     _action_server_hri_name = rospy.get_param("~action_server_hri")
+    _switch_connection_timeout = rospy.get_param("~switch_connection_timeout")
+
     socketIP = None
     socketPort = None
     if rospy.has_param(_socketIO_ip_param):
@@ -91,7 +105,9 @@ class HRIManager:
       return
 
     self.socketIO = SocketIO(socketIP, socketPort, LoggingNamespace)
+
     self.pub_choice_scenario=rospy.Publisher(_topic_choice_scenario,String,queue_size=1)
+
     self.action_online_client = actionlib.SimpleActionClient(_stt_online_server_name,speechToTextPalbator.msg.SttOnlineAction)
     self.action_offline_client = actionlib.SimpleActionClient(_stt_offline_server_name,speechToTextPalbator.msg.SttOfflineAction)
     self.client_TTS=actionlib.SimpleActionClient(_tts_mimic_server_name,ttsMimic.msg.TtsMimicAction)
@@ -110,6 +126,9 @@ class HRIManager:
     rospy.loginfo("{class_name} : Waiting for TTS server...".format(class_name=self.__class__.__name__))
     self.client_TTS.wait_for_server()
     rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
+
+    self.switch_timeout = _switch_connection_timeout
+
 
   def init_socket_listeners(self):
     """
@@ -172,7 +191,7 @@ class HRIManager:
     which_step_action=deepcopy(self.stepsList[goal['stepIndex']]['action'])
     which_step_name=deepcopy(self.stepsList[goal['stepIndex']]['name'])
 
-    if scenario == 'receptionist':
+    if scenario == 'Receptionist':
         ##### rajouter des conditions si nouvelles actions importantes
       if which_step_action != '':
         if which_step_action=='askOpenDoor':
@@ -200,7 +219,7 @@ class HRIManager:
         else:
           self.static_view(goal['stepIndex'])
 
-    elif scenario == 'cleanup':
+    elif scenario == 'Clean_up':
       if which_step_action != '':
         
         if which_step_action == 'goTo':
@@ -234,7 +253,13 @@ class HRIManager:
     json_output=None
     self.action_GM_TO_HRI_feedback.Gm_To_Hri_feedback=''
     json_goal=js.loads(goal.json_request)
-    if json_goal['action']=="stepsList":
+    if json_goal['action'] == 'RESTART':
+      self.restart_hri()
+      self.json_for_GM={
+        "result": "Restart done"
+      }
+
+    if json_goal['action'] == "stepsList":
       self.scenario_loaded=False
       rospy.loginfo("{class_name} : Getting steps list...".format(class_name=self.__class__.__name__))
       self.stepsList=json_goal['stepsList']
@@ -243,14 +268,19 @@ class HRIManager:
         "result": "Steps received"
       }
 
-    elif json_goal['action']=="currentStep":
-      if json_goal['stepIndex']==0:
+    elif json_goal['action'] == "currentStep":
+      if json_goal['stepIndex'] == 0:
+        scenario_for_tablet = self.choosen_scenario.replace("_"," ")
+        scenario_for_tablet = scenario_for_tablet.title()
         json_charge_scenario={
-          'scenario': self.choosen_scenario
+          'scenario': scenario_for_tablet
         }
         self.chargeScenario(json_charge_scenario)
         
       self.parser_scenario_step(self.choosen_scenario,json_goal)
+
+    # elif json_goal['action'] == 'currentHelpStep':
+
 
     json_output=self.json_for_GM
     if 'result' in json_output and json_output['result']=='PREEMPTED':
@@ -268,17 +298,22 @@ class HRIManager:
     """
         Load a view which doesn't have any action name.
     """
-    if self.index != 0:
+    indexToSend = deepcopy(self.index)
+    if indexToSend != self.loaded_steps:
+      indexToSend = self.loaded_steps
+      self.currentStep['order'] = self.loaded_steps
+
+    if indexToSend != 0:
       stepCompletedJson = {"idSteps": self.indexStepCompleted}
       self.socketIO.emit(rospy.get_param("~socket_emit_step_complete"),stepCompletedJson,broadcast=True)
       rospy.loginfo("{class_name} : ETAPE TERMINEE: ".format(class_name=self.__class__.__name__)+str(self.currentStep['name']))
-      self.indexStepCompleted = self.index
+      self.indexStepCompleted = indexToSend
     else:
-      self.indexStepCompleted = self.index
+      self.indexStepCompleted = indexToSend
 
     rospy.loginfo("{class_name} : ETAPE COURANTE A DEMARRER: ".format(class_name=self.__class__.__name__)+self.currentStep['name'])
     dataJsonToSendCurrentStep = {
-        "index": self.index,
+        "index": indexToSend,
         "step":self.currentStep
     }
     self.socketIO.emit(rospy.get_param("~socket_emit_current_step"),dataJsonToSendCurrentStep,broadcast=True)
@@ -287,13 +322,22 @@ class HRIManager:
           "state": 'TOGGLE_TIMER/ON'
       }
       self.socketIO.emit(rospy.get_param("~socket_emit_start_timer"),dataJsonToSendTimer, broadcast=True)
+    else:
+      dataJsonToSendTimer = {
+          "state": 'TOGGLE_TIMER/OFF'
+      }
+      self.socketIO.emit(rospy.get_param("~socket_emit_start_timer"),dataJsonToSendTimer, broadcast=True)
     rospy.loginfo("{class_name} : ETAPE DEMARREE: ".format(class_name=self.__class__.__name__)+self.currentStep['name'])
+
       
 
   def load_view_with_action(self):
     """
         Load a view with an action name.
     """
+    if self.loaded_steps != self.currentStep['order']:
+      self.currentStep['order'] = self.loaded_steps
+
     self.view_launcher.start(self.currentStep['action'],self.currentStep, self.currentStep['order'], self.dataToUse)
     rospy.loginfo("{class_name} : CHARGEMENT VUE SOUS ETAPE:".format(class_name=self.__class__.__name__)+self.currentStep['name'] +" SUR TABLETTE")
 
@@ -309,20 +353,38 @@ class HRIManager:
         :type stepIndex: int
     """
     rospy.logwarn("{class_name} : STATIC VIEW : ".format(class_name=self.__class__.__name__)+str(stepIndex))
+
+    if stepIndex == 0:
+      self.loaded_steps = stepIndex
+    else:
+      self.loaded_steps = self.loaded_steps + 1
+
+    rospy.logwarn("LOADED STEPS "+str(self.loaded_steps))
+
     self.currentStep=deepcopy(self.stepsList[stepIndex])
     self.index=deepcopy(self.currentStep['order'])
     self.currentAction=deepcopy(self.currentStep['action'])
+    
+
     if self.currentAction == '':
       self.load_step_without_action()
     else:
       self.load_view_with_action()
 
-    self.json_for_GM={
-        "indexStep": self.index,
-        "actionName": '',
-        "NextToDo": "next",
-        "NextIndex": self.index+1
-    }
+    if self.currentStep['name'] != 'Finish Scenario':
+      self.json_for_GM={
+          "indexStep": self.index,
+          "actionName": '',
+          "NextToDo": "next",
+          "NextIndex": self.index+1
+      }
+    else:
+      self.json_for_GM={
+          "indexStep": self.index,
+          "actionName": '',
+          "NextToDo": "next",
+          "NextIndex": ""
+      }
     self.event_detected_flag=True
     self.socketIO.wait(seconds=0.1)
 
@@ -340,6 +402,14 @@ class HRIManager:
         :type in_procedure: Boolean
     """
     rospy.logwarn("{class_name} : DYNAMIC VIEW : ".format(class_name=self.__class__.__name__)+str(stepIndex))
+
+    if stepIndex == 0:
+      self.loaded_steps = stepIndex
+    else:
+      self.loaded_steps = self.loaded_steps + 1
+    
+    rospy.logwarn("LOADED STEPS "+str(self.loaded_steps))
+
     self.currentStep=deepcopy(self.stepsList[stepIndex])
     self.index=deepcopy(self.currentStep['order'])
     self.currentAction=deepcopy(self.currentStep['action'])
@@ -505,6 +575,14 @@ class HRIManager:
       self.currentAction=deepcopy(self.currentStep['action'])
       rospy.loginfo("{class_name} : CURRENT ACTION ".format(class_name=self.__class__.__name__)+str(self.currentAction))
       if self.currentAction == '':
+
+        if index_procedure == 0:
+          self.loaded_steps = index_procedure
+        else:
+          self.loaded_steps = self.loaded_steps + 1
+        
+        rospy.logwarn("STEPS LOADED "+str(self.loaded_steps))
+
         self.load_step_without_action()
         index_procedure=index_procedure+1
         rospy.logwarn("{class_name} : NEXT PROCEDURE INDEX ".format(class_name=self.__class__.__name__)+str(index_procedure))
@@ -519,6 +597,7 @@ class HRIManager:
               elif "drink" in self.currentAction:
                 self.choosenDrink=''
               index_procedure=index_procedure-1
+              self.loaded_steps = self.loaded_steps-2
           elif self.dataToUse=='true' or self.dataToUse=='YES':
             rospy.loginfo("{class_name} : RECEIVED DATA -> TRUE".format(class_name=self.__class__.__name__))
             if "name" in self.currentStep['name']:
@@ -591,7 +670,7 @@ class HRIManager:
     self.action_online_client.send_goal(self.goal_online)
     cp=0
     while self.action_online_client.get_result() is None and not rospy.is_shutdown():
-      if cp==20 or self.connection_ON==False:
+      if cp == self.switch_timeout or self.connection_ON == False:
         self.action_online_client.cancel_all_goals()
         self.tts_action('Switching to offline mode')
         break
@@ -640,8 +719,9 @@ class HRIManager:
       rospy.loginfo("{class_name} : Waiting for OFFLINE detect ....".format(class_name=self.__class__.__name__))
       self.socketIO.wait(seconds=0.1)
     rospy.loginfo("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.action_offline_client.get_result()))
-    if str(self.action_offline_client.get_result().stt_result) != '':
-      self.dataToUse=str(self.action_offline_client.get_result().stt_result)
+    if not self.action_offline_client.get_result() is None:
+      if str(self.action_offline_client.get_result().stt_result) != '':
+        self.dataToUse=str(self.action_offline_client.get_result().stt_result)
     rospy.loginfo("{class_name} : ----------- FIN ROUTINE OFFLINE--------------------------------".format(class_name=self.__class__.__name__))
 
   def indexDataJSstepDone(self,json):
@@ -665,7 +745,7 @@ class HRIManager:
     self.client_TTS.cancel_all_goals()
     self.event_detected_flag=True
     
-    if (self.data_received is False and self.index == self.currentIndexDataReceivedJS):
+    if (self.data_received is False and (self.index == self.currentIndexDataReceivedJS or self.loaded_steps == self.currentIndexDataReceivedJS)):
       self.event_touch = True
       rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
       rospy.loginfo("{class_name} : DONNEE RECUE DEPUIS TOUCH MANAGER".format(class_name=self.__class__.__name__))
@@ -730,7 +810,7 @@ class HRIManager:
     rospy.loginfo("{class_name} : ".format(class_name=self.__class__.__name__)+str(json['data']))
     rospy.loginfo("{class_name} : Index de la vue lancee sur le Touch : ".format(class_name=self.__class__.__name__)+str(json['index']))
 
-  def restart_hri(self,json):    
+  def restart_hri(self):    
     """
         NOT WORKING FOR NOW.
         Callback function when the STOP button is clicked on the screen. Launches a reset of HRI and React.
@@ -738,8 +818,12 @@ class HRIManager:
         :param json: JSON with data of the last event
         :type json: dict 
     """
-    socketIO.emit(rospy.get_param('~socket_emit_restart_hri'),broadcast=True)
-    self.pub_restart_request.publish("RESTART")
+    self.socketIO.emit(rospy.get_param('~socket_emit_restart_hri'),broadcast=True)
+
+    self.init_variables()
+
+    rospy.logwarn("{class_name} : HRI RESTARTED".format(class_name=self.__class__.__name__))
+    # self.pub_restart_request.publish("RESTART")
 
 
 if __name__ == '__main__':

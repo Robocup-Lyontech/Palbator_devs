@@ -18,7 +18,7 @@ config_recorder: {
 hmm: "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us"
 
 config: {
-    receptionist: {
+    Receptionist: {
         dict: '../misc/receptionist/asr.dict',
         kwlist: '../misc/receptionist/asr.kwlist',
         gram: "../misc/receptionist/asr",
@@ -32,7 +32,7 @@ config: {
             "next": "../misc/receptionist/corpus_next.txt"
         }
     },
-    cleanup: {
+    Clean_up: {
         dict: '../misc/cleanup/cleanup.dict',
         kwlist: '../misc/cleanup/cleanup.kwlist',
         gram: "../misc/cleanup/cleanup",
@@ -46,14 +46,14 @@ config: {
 }
 
 parser_action_database: {
-    receptionist: {
+    Receptionist: {
         askAge: 'age',
         askDrink: 'drinks',
         askName: 'names',
         confirm: 'confirmation',
         askOpenDoor: "next"
     },
-    cleanup: {
+    Clean_up: {
         askRoom: 'room',
         confirm: 'confirmation'
     }
