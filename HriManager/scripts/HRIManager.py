@@ -209,6 +209,9 @@ class HRIManager:
         elif which_step_action=='askToFollow':
           self.dynamic_view(goal['stepIndex'],goal['data'])
 
+        elif which_step_action == 'goTo':
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
         else:
           self.static_view(goal['stepIndex'])
       
@@ -278,8 +281,6 @@ class HRIManager:
         self.chargeScenario(json_charge_scenario)
         
       self.parser_scenario_step(self.choosen_scenario,json_goal)
-
-    # elif json_goal['action'] == 'currentHelpStep':
 
 
     json_output=self.json_for_GM
@@ -466,11 +467,21 @@ class HRIManager:
               self.currentStep['speech']['title']=self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
 
       elif self.currentAction == 'goTo' or self.currentAction == 'findObject':
-        key = self.currentStep['arguments']['what']
-        self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
-        self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
-        self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
-        self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_path",data[key]['pathOnTablet'])
+        if self.choosen_scenario == 'Receptionist':
+          location_name = self.currentStep['arguments']['where']
+          for item in data:
+            if item['name'] == location_name:
+              self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace("location_name",location_name)
+              self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace("location_name",location_name)
+              self.currentStep['arguments']['location']['pathOnTablet'] = item['pathOnTablet']
+              self.currentStep['arguments']['location']['name'] = item['id']
+
+        elif self.choosen_scenario == 'Clean_up':
+          key = self.currentStep['arguments']['what']
+          self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
+          self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
+          self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
+          self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_path",data[key]['pathOnTablet'])
 
       elif self.currentAction == 'objectAction':
         for key in data.keys():
