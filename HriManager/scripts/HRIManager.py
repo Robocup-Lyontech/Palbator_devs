@@ -466,8 +466,8 @@ class HRIManager:
               self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
               self.currentStep['speech']['title']=self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
 
-      elif self.currentAction == 'goTo' or self.currentAction == 'findObject':
-        if self.choosen_scenario == 'Receptionist':
+      elif self.currentAction == 'goTo':
+        if self.choosen_scenario == "Receptionist":
           location_name = self.currentStep['arguments']['where']
           for item in data:
             if item['name'] == location_name:
@@ -476,19 +476,26 @@ class HRIManager:
               self.currentStep['arguments']['location']['pathOnTablet'] = item['pathOnTablet']
               self.currentStep['arguments']['location']['name'] = item['id']
 
-        elif self.choosen_scenario == 'Clean_up':
-          key = self.currentStep['arguments']['what']
+        elif self.choosen_scenario == "Clean_up":
+          key = self.currentStep['arguments']['where']
           self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
           self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
           self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
-          self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_path",data[key]['pathOnTablet'])
+          self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
+
+      elif self.currentAction == 'findObject':
+        key = self.currentStep['arguments']['what']
+        self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
+        self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
 
       elif self.currentAction == 'objectAction':
         for key in data.keys():
           self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
           self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
           self.currentStep['arguments']['object']['name'] = self.currentStep['arguments']['object']['name'].replace(key+"_name",data[key]['name'])
-          self.currentStep['arguments']['object']['pathOnTablet'] = self.currentStep['arguments']['object']['pathOnTablet'].replace(key+"_path",data[key]['pathOnTablet'])
+          self.currentStep['arguments']['object']['pathOnTablet'] = self.currentStep['arguments']['object']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
 
         rospy.logwarn("------------------------")
         rospy.logwarn("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.currentStep))
@@ -508,13 +515,31 @@ class HRIManager:
           "NextIndex": self.index+1
         }
       else:
-        self.json_for_GM={
+        if self.currentAction == 'objectAction' and 'store' in self.currentStep['id']:
+          self.json_for_GM={
+            "indexStep": self.index,
+            "actionName": self.currentAction,
+            "scenario": self.choosen_scenario,
+            "NextToDo": "next",
+            "NextIndex": self.index+2
+          }
+        elif self.currentAction == 'goTo':
+          self.json_for_GM={
+            "indexStep": self.index,
+            "actionName": self.currentAction,
+            "scenario": self.choosen_scenario,
+            "destination": self.currentStep['arguments']['location']['name'],
+            "NextToDo": "next",
+            "NextIndex": self.index+1
+          }
+        else:
+          self.json_for_GM={
             "indexStep": self.index,
             "actionName": self.currentAction,
             "scenario": self.choosen_scenario,
             "NextToDo": "next",
             "NextIndex": self.index+1
-        }
+          }
       self.event_detected_flag=True
       self.socketIO.wait(seconds=0.1)
 
