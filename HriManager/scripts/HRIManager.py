@@ -10,6 +10,8 @@ import actionlib
 from HriManager.msg import GmToHriAction, GmToHriFeedback, GmToHriResult
 import time
 from copy import deepcopy
+from rospy.exceptions import ROSException, ROSInterruptException
+
 
 from python_depend.views import Views
 import speechToTextPalbator.msg
@@ -41,7 +43,14 @@ class HRIManager:
     self.enable_changing_connection=True
     self.sub_connection_state = rospy.Subscriber(rospy.get_param('~topic_connection_state'),String,self.handle_change_connection_state)
     rospy.loginfo("{class_name} : Waiting for connection state message ...".format(class_name=self.__class__.__name__))
-    rospy.wait_for_message(rospy.get_param('~topic_connection_state'),String)
+
+    try:
+      rospy.wait_for_message(rospy.get_param('~topic_connection_state'),String,3)
+      rospy.loginfo("Got a connection state : %s",str(self.connection_ON))
+    except (ROSException, ROSInterruptException) as e:
+        rospy.logwarn("Unable to get connection state message. The system will assume a disconnected state")
+        self.connection_ON = False
+
     rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED'.format(class_name=self.__class__.__name__))
 
   def init_variables(self):
@@ -491,6 +500,7 @@ class HRIManager:
         self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
 
       elif self.currentAction == 'objectAction':
+        # rospy.logerr("DATA : %s",str(data))
         for key in data.keys():
           self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
           self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
