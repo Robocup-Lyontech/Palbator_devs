@@ -27,6 +27,9 @@ from catch_object import CatchObject
 from store_object import StoreObject
 from release_object import ReleaseObject
 from object_action import ObjectAction
+from look_for_guest import LookForGuest
+from found_guest import FoundGuest
+from found_anyone import FoundAnyone
 
 class Views:
     def __init__(self,socket):
@@ -64,6 +67,9 @@ class Views:
             'storeObject': StoreObject,
             'releaseObject': ReleaseObject,
             'objectAction': ObjectAction,
+            'lookForGuest': LookForGuest,
+            'foundGuest': FoundGuest,
+            'foundAnyone': FoundAnyone,
         }
         self.view=None
 

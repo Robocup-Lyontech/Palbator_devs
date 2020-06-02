@@ -8,30 +8,14 @@
     <arg name="config" default="$(find HriManager)/config/config_HRI.yaml" doc="Path to parameter config file"/>
 
 
-    <node
-        name="HRIManager"
-        pkg="HriManager"
-        type="HRIManager.py"
-        output="screen">
+    <node name="HRIManager" pkg="HriManager" type="HRIManager.py" output="screen">
         <rosparam file="$(arg config)"/>
     </node>
 
-    <node
-        name="multiplexer_tablet"
-        pkg="HriManager"
-        type="multiplexer.py"
-        output="screen" />
+    <!-- TABLET LAUNCH NOT WORKING FOR NOW-->
+    <!-- <node name="tablet" pkg="HriManager" type="test_launching_tablet.py" output="screen" /> -->
 
-        
-	<!-- cwd="node"
-        /> -->
- 
-    <!--
-    <node
-	name="multiplexer"
-	pkg="HriManager"
-	type="multiplexer.py"
-	output="screen"
-	cwd="node" /> -->
+    <node name="multiplexer_tablet" pkg="HriManager" type="multiplexer.py" output="screen" />
+
 
 </launch>
