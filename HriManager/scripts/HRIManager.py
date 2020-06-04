@@ -483,7 +483,7 @@ class HRIManager:
               self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace("location_name",location_name)
               self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace("location_name",location_name)
               self.currentStep['arguments']['location']['pathOnTablet'] = item['pathOnTablet']
-              self.currentStep['arguments']['location']['name'] = item['id']
+              self.currentStep['arguments']['location']['name'] = item['name']
 
         elif self.choosen_scenario == "Clean_up":
           key = self.currentStep['arguments']['where']
