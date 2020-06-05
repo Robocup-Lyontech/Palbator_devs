@@ -138,10 +138,11 @@ class SpeechToTextOnline(object):
 
         # adjust the recognizer sensitivity to ambient noise and record audio
         # from the microphone
+        self.tts_action("Speak Now please")
         with microphone as source:
             recognizer.adjust_for_ambient_noise(source,duration=self.config_recorder['ajusting_ambient_noise_duration'])
             print("Speak now please")
-            self.tts_action("Speak Now please")
+            # self.tts_action("Speak Now please")
             audio = recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
 
         # set up the response object
