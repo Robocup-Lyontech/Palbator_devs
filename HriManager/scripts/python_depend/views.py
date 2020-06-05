@@ -30,6 +30,7 @@ from object_action import ObjectAction
 from look_for_guest import LookForGuest
 from found_guest import FoundGuest
 from found_anyone import FoundAnyone
+from look_for_known_guest import LookForKnownGuest
 
 class Views:
     def __init__(self,socket):
@@ -70,6 +71,7 @@ class Views:
             'lookForGuest': LookForGuest,
             'foundGuest': FoundGuest,
             'foundAnyone': FoundAnyone,
+            'lookForKnownGuest': LookForKnownGuest
         }
         self.view=None
 

@@ -18,12 +18,14 @@ class AskToFollow:
         
         text = arguments['speech']['title']
         locations = arguments['arguments']['location']
+        who = arguments['arguments']['who']
 
         dataJsonToSendCurrentView = {
                 "view": js_view_key,
                 "data": {
                     'textToShow': text,
-                    'location': locations
+                    'location': locations,
+                    'who': who
                 },
                 "step":arguments,
                 "index":index

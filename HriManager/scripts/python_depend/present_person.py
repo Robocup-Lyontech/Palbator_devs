@@ -37,7 +37,8 @@ class PresentPerson:
                         'who': {
                             'drink': who['drinkObj'],
                             'name': who['name'],
-                            'guestPhotoPath': who['guestPhotoPath']   
+                            'guestPhotoPath': who['guestPhotoPath'],
+                            'age': who['age'] 
                         },
                         'to': to
                     }   

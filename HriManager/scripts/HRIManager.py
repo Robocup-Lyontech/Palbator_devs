@@ -206,6 +206,9 @@ class HRIManager:
         if which_step_action=='askOpenDoor':
           self.dynamic_view(goal['stepIndex'],None,wait_for_event=True)
 
+        elif which_step_action == 'lookForKnownGuest':
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
         elif which_step_action=='presentPerson':
           self.dynamic_view(goal['stepIndex'],goal['data'])
 
@@ -427,9 +430,23 @@ class HRIManager:
     if wait_for_event == False:
 
       if self.currentAction == "askToFollow":
-        key=self.currentStep['arguments']['who']
+        key=self.currentStep['arguments']['key']
         self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
-      
+        self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_drink",data[key]['drink'])
+        self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_age",str(data[key]['age']))
+        self.currentStep['arguments']['who']['name'] = data[key]['name']
+        self.currentStep['arguments']['who']['drinkObj']['name'] = data[key]['drink']
+        self.currentStep['arguments']['who']['drinkObj']['pathOnTablet'] = data[key]['pathOnTablet']
+        self.currentStep['arguments']['who']['guestPhotoPath'] = data[key]['guestPhotoPath']
+        self.currentStep['arguments']['who']['age'] = str(data[key]['age'])
+
+      elif self.currentAction == "lookForKnownGuest":
+        key=self.currentStep['arguments']['key']
+        self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
+        self.currentStep['speech']['title']=self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['who']['name'] = data[key]['name']
+        self.currentStep['arguments']['who']['guestPhotoPath'] = data[key]['guestPhotoPath']
+
       elif self.currentAction == "presentPerson":
         speech=self.currentStep['speech']['said']
         number_know_guests=len(self.currentStep['arguments']['to'])
@@ -439,6 +456,7 @@ class HRIManager:
             if key in self.currentStep['arguments']['to'][i]['name']:
               self.currentStep['arguments']['to'][i]['name']=data[key]['name']
               self.currentStep['arguments']['to'][i]['guestPhotoPath']=data[key]['guestPhotoPath']
+              self.currentStep['arguments']['to'][i]['age']=str(data[key]['age'])
               self.currentStep['arguments']['to'][i]['drink']['name']=data[key]['drink']
               self.currentStep['arguments']['to'][i]['drink']['pathOnTablet']=data[key]['pathOnTablet']
 
@@ -447,12 +465,14 @@ class HRIManager:
           if key in self.currentStep['arguments']['who']['name']:
             self.currentStep['arguments']['who']['name']=data[key]['name']
             self.currentStep['arguments']['who']['guestPhotoPath']=data[key]['guestPhotoPath']
+            self.currentStep['arguments']['who']['age']=str(data[key]['age'])
             self.currentStep['arguments']['who']['drinkObj']['name']=data[key]['drink']
             self.currentStep['arguments']['who']['drinkObj']['pathOnTablet']=data[key]['pathOnTablet']
             rospy.logwarn("{class_name} : KEY ".format(class_name=self.__class__.__name__)+str(key)+" DRINK "+str(data[key]['drink'])+" DRINKPATH "+str(data[key]['pathOnTablet']))
 
-          speech=speech.replace(key+'_name',data[key]['name'])
-          speech=speech.replace(key+'_drink',data[key]['drink'])
+          speech = speech.replace(key+'_name',data[key]['name'])
+          speech = speech.replace(key+'_drink',data[key]['drink'])
+          speech = speech.replace(key+'_age',str(data[key]['age']))
         self.currentStep['speech']['said']=speech
       
       elif self.currentAction == "seatGuest":
