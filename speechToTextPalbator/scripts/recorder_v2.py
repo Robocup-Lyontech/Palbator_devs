@@ -48,12 +48,12 @@ class RecorderForSpeechRecog:
             if file.endswith(".wav"):
                 cp = cp+1
 
-        self.tts_action('Speak now please')
+        # self.tts_action('Speak now please')
         with self.microphone as source:
             # self.recognizer.adjust_for_ambient_noise(source,duration=2)
             self.recognizer.adjust_for_ambient_noise(source,duration=self.config['ajusting_ambient_noise_duration'])
             print('Speak Now my friend!!!!!')
-            # self.tts_action('Speak now please')
+            self.tts_action('Speak now please')
             print('Intent '+str(cp+1))
             audio = self.recognizer.listen(source,timeout=self.config['listen_timeout'],phrase_time_limit=self.config['listen_phrase_time_limit'])
 
