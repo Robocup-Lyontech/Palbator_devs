@@ -1,0 +1,18 @@
+[
+    {
+        "id": "Receptionist",
+        "name": "Receptionist2020CPEScenario"
+    },
+    {
+        "id": "Clean Up",
+        "name": "CleanUp2020CPEScenario"
+    },
+    {
+        "id": "Inspection",
+        "name": "Inspection2020CPEScenario"
+    }, 
+    {
+        "id": "Other", 
+        "name": "BLABLA"
+    }
+]

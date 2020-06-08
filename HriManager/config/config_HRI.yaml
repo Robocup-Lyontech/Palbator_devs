@@ -38,6 +38,6 @@ action_server_hri: "action_GmToHri"
 
 topic_connection_state: "connection_state"
 
-enable_STT: True
+enable_STT: False
 
 switch_connection_timeout: 20

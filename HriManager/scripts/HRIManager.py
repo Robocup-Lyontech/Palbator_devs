@@ -38,6 +38,9 @@ class HRIManager:
 
     self.init_variables()
 
+    self.pub = rospy.Publisher("/gm_start",String,queue_size=1)
+
+
     self.connection_ON=None
     self.action_GM_TO_HRI_server.start()
     self.enable_changing_connection=True
@@ -52,6 +55,40 @@ class HRIManager:
         self.connection_ON = False
 
     rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED'.format(class_name=self.__class__.__name__))
+
+
+    #### TEST FOR NEW MENU #####
+    step = {
+      "name": "MainMenu",
+      "order": 0,
+      "eta": 0,
+      "speech": {
+        "said": "Please choose a scenario in the list",
+        "title": "Please choose a scenario in the list"
+      },
+      "action": "mainMenuPalbator",
+      "id": "main-menu"
+    }
+
+
+    while self.dataToUse != 'TABLET_ON' and not rospy.is_shutdown():
+      self.socketIO.wait(seconds=0.1)
+    
+    self.event_touch = False
+
+
+    rospy.logerr("TABLET REALLY ON")
+    self.view_launcher.start(step['action'],step, step['order'], self.dataToUse)
+    while self.event_touch == False and not rospy.is_shutdown():
+      self.socketIO.wait(seconds=0.1)
+    
+
+    rospy.logwarn(self.dataToUse)
+
+    # for i in range(0,10):
+    self.pub.publish(self.dataToUse)
+
+
 
   def init_variables(self):
     self.nameToUse=[]
@@ -205,6 +242,10 @@ class HRIManager:
       if which_step_action != '':
         if which_step_action=='askOpenDoor':
           self.dynamic_view(goal['stepIndex'],None,wait_for_event=True)
+
+        elif which_step_action == 'mainMenuPalbator':
+          self.dynamic_view(goal['stepIndex'],None,wait_for_event=True)
+
 
         elif which_step_action == 'lookForKnownGuest':
           self.dynamic_view(goal['stepIndex'],goal['data'])
@@ -808,6 +849,8 @@ class HRIManager:
         :param json: JSON with data of last loaded view
         :type json: dict
     """
+    rospy.logwarn("DATA_RECEIVED")
+
     self.client_TTS.cancel_all_goals()
     self.event_detected_flag=True
     
