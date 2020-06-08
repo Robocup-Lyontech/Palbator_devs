@@ -4,6 +4,7 @@ import rospy
 import actionlib
 import speechToTextPalbator.msg
 import os
+import shutil
 from std_msgs.msg import String
 
 from pocketsphinx.pocketsphinx import *
@@ -51,6 +52,8 @@ class SpeechToTextOffline(object):
 
         self.audio_dir = self.config_recorder['audio_record_dir']   
 
+        self.reset_record_folder()
+
         if rospy.has_param('~config'):
             self.config = rospy.get_param('~config')
         else:
@@ -67,6 +70,19 @@ class SpeechToTextOffline(object):
         rospy.on_shutdown(self.shutdown)
         rospy.loginfo("{class_name} : server for STT offline initiated".format(class_name=self.__class__.__name__))
 
+    def reset_record_folder(self):
+        folder = os.path.join(self.current_directory,self.audio_dir)
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+
+            except Exception as e:
+                rospy.logwarn('{class_name} : Failed to delete %s. Reason: %s'.format(class_name=self.__class__.__name__),file_path, e)
+        
     def shutdown(self):
         """This function is executed on node shutdown."""
         # command executed after Ctrl+C is pressed
@@ -235,7 +251,7 @@ class SpeechToTextOffline(object):
             chunk = 1024
             filename = os.path.join(self.current_directory,self.audio_dir)+'/intent'+str(cp)+'.wav'
             wf = wave.open(filename, 'rb')
-            print("{class_name} : Loading file :"+str(filename))
+            print("{class_name} : Loading file : ".format(class_name=self.__class__.__name__)+str(filename))
             p = pyaudio.PyAudio()
             stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
                         channels = wf.getnchannels(),
@@ -280,7 +296,7 @@ class SpeechToTextOffline(object):
                         break
 
             if not self.success:
-                rospy.loginfo("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
+                rospy.logwarn("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
 
 
     
