@@ -31,10 +31,10 @@ class STTClient(object):
     def routine_both(self):
         self.goal_online = speechToTextPalbator.msg.SttOnlineGoal()
         order={
-            'scenario': 'cleanup',
+            'scenario': 'Receptionist',
             'order': 1,
-            'action': "askName",
-            'speech': "What is your name ?"
+            'action': "askAge",
+            'speech': "How old are you ?"
         }
         json_in_str=json.dumps(order)
         self.goal_online.order=json_in_str
@@ -62,9 +62,10 @@ class STTClient(object):
         rospy.loginfo("Sending goal to offline...")
 
         order={
-            'scenario': 'receptionist',
+            'scenario': 'Receptionist',
             'order': 1,
-            'action': "askDrink"
+            'action': "askAge",
+            'speech': "How old are you ?"
         }
         json_in_str=json.dumps(order)
         self.goal.order=json_in_str

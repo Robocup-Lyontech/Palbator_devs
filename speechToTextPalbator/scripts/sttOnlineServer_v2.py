@@ -177,11 +177,40 @@ class SpeechToTextOnline(object):
         """
         transcription=transcription.upper()
         data = ''
-        for element in self.database_words:
-            if element in transcription:
-                data=element
-                rospy.loginfo("{class_name} : GOOD DETECTION".format(class_name=self.__class__.__name__))
-                break
+
+        if self.dictionary_choose == "age":
+            if not " " in transcription:
+                try:
+                    new_transcription = int(transcription)
+                    for element in self.database_words:
+                        if transcription == element:
+                            data=element
+                            rospy.loginfo("{class_name} : GOOD DETECTION".format(class_name=self.__class__.__name__))
+                            break
+
+                except ValueError:
+                    pass
+
+            else:
+                new_transcription_cut = transcription.split(" ")
+                for item in new_transcription_cut:
+                    try:
+                        test = int(item)
+                        for element in self.database_words:
+                            if item == element:
+                                data=element
+                                rospy.loginfo("{class_name} : GOOD DETECTION".format(class_name=self.__class__.__name__))
+                                break
+
+                    except ValueError:
+                        pass
+
+        else:
+            for element in self.database_words:
+                if element in transcription:
+                    data=element
+                    rospy.loginfo("{class_name} : GOOD DETECTION".format(class_name=self.__class__.__name__))
+                    break
 
         if data == '':
             rospy.loginfo("{class_name} : BAD DETECTION. Please try again".format(class_name=self.__class__.__name__))

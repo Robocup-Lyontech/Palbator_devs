@@ -67,10 +67,10 @@ class STTClient(object):
         rospy.loginfo("Sending goal to online ...")
 
         order={
-            'scenario': 'cleanup',
+            'scenario': 'Receptionist',
             'order': 1,
-            'action': "askRoom",
-            'speech': "What is your name ?"
+            'action': "askAge",
+            'speech': "How old are you ?"
         }
         json_in_str=json.dumps(order)
         self.goal.order=json_in_str

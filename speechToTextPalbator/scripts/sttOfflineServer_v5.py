@@ -287,13 +287,37 @@ class SpeechToTextOffline(object):
             stream.close()
             self.decoder.end_utt()
 
+
+            
             for item in list_detection:
-                for element in self.database_words:
-                    if element in item:
-                        self.success=True
-                        self.output=element
-                        rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
-                        break
+                if self.dictionary_choose == "age":
+                    if " " in item:
+                        list_in_item = item.split(" ")
+                        for cut in list_in_item:
+                            try:
+                                test = int(cut)
+                                self.success=True
+                                self.output=cut
+                                rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
+                                break
+                            except ValueError:
+                                pass
+                    else:
+                        try:
+                            test = int(item)
+                            self.success=True
+                            self.output=item
+                            rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
+                            break
+                        except ValueError:
+                            pass
+                else:
+                    for element in self.database_words:
+                        if element in item:
+                            self.success=True
+                            self.output=element
+                            rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
+                            break
 
             if not self.success:
                 rospy.logwarn("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
