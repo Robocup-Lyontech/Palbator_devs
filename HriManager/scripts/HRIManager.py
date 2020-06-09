@@ -3,7 +3,7 @@ from socketIO_client import SocketIO, LoggingNamespace
 from python_depend.views import Views
 import json as js
 
-from std_msgs.msg import String
+from std_msgs.msg import String, Bool
 import rospy
 import os 
 import actionlib
@@ -40,7 +40,60 @@ class HRIManager:
 
     self.pub = rospy.Publisher("/gm_start",String,queue_size=1)
 
+    self.init_connection()
+    
 
+    rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED. WAITING FOR A TABLET REFRESH'.format(class_name=self.__class__.__name__))
+
+
+    self.pub_test_restart = rospy.Publisher("/test_HRI_restart",Bool,queue_size=1)
+    #### TEST FOR NEW MENU #####
+    self.load_tablet_menu()
+
+    ######
+
+  def load_tablet_menu(self):
+    step = {
+      "name": "MainMenu",
+      "order": 0,
+      "eta": 0,
+      "speech": {
+        "said": "Please choose a scenario in the list",
+        "title": "Please choose a scenario in the list"
+      },
+      "arguments": {
+        "scenario_list": self.scenario_list
+      },
+      "action": "mainMenuPalbator",
+      "id": "main-menu"
+    }
+
+    while self.dataToUse != 'TABLET_ON' and not rospy.is_shutdown():
+      self.socketIO.wait(seconds=0.1)
+    
+    self.event_touch = False
+    rospy.loginfo("TABLET CONNECTED AND READY")
+    rospy.loginfo("LOADING MENU ON TABLET ...")
+
+    if step['order'] == 0:
+      self.loaded_steps = step['order']
+    else:
+      self.loaded_steps = self.loaded_steps + 1
+
+    self.index=step['order']
+    self.view_launcher.start(step['action'],step, step['order'], self.dataToUse)
+
+    rospy.loginfo("MENU LOADED")
+    while self.event_touch == False and not rospy.is_shutdown():
+      self.socketIO.wait(seconds=0.1)
+
+    self.event_touch = False
+
+    rospy.loginfo("{class_name} : CHOOSEN SCENARIO : %s".format(class_name=self.__class__.__name__),self.dataToUse)
+    if "CPE" in self.dataToUse:
+      self.pub.publish(str(self.dataToUse))
+
+  def init_connection(self):
     self.connection_ON=None
     self.action_GM_TO_HRI_server.start()
     self.enable_changing_connection=True
@@ -54,40 +107,9 @@ class HRIManager:
         rospy.logwarn("Unable to get connection state message. The system will assume a disconnected state")
         self.connection_ON = False
 
-    rospy.loginfo('{class_name} : HRI MANAGER LAUNCHED'.format(class_name=self.__class__.__name__))
-
-
-    #### TEST FOR NEW MENU #####
-    step = {
-      "name": "MainMenu",
-      "order": 0,
-      "eta": 0,
-      "speech": {
-        "said": "Please choose a scenario in the list",
-        "title": "Please choose a scenario in the list"
-      },
-      "action": "mainMenuPalbator",
-      "id": "main-menu"
-    }
-
-
-    while self.dataToUse != 'TABLET_ON' and not rospy.is_shutdown():
-      self.socketIO.wait(seconds=0.1)
-    
-    self.event_touch = False
-
-
-    rospy.logerr("TABLET REALLY ON")
-    self.view_launcher.start(step['action'],step, step['order'], self.dataToUse)
-    while self.event_touch == False and not rospy.is_shutdown():
-      self.socketIO.wait(seconds=0.1)
-    
-
-    rospy.logwarn(self.dataToUse)
-
-    # for i in range(0,10):
-    self.pub.publish(self.dataToUse)
-
+  def reset_for_restart(self):
+    self.init_variables()
+    self.load_tablet_menu()
 
 
   def init_variables(self):
@@ -136,6 +158,8 @@ class HRIManager:
     _action_server_hri_name = rospy.get_param("~action_server_hri")
     _switch_connection_timeout = rospy.get_param("~switch_connection_timeout")
 
+    _list_scenario_available = rospy.get_param("~list_scenario_available")
+
     socketIP = None
     socketPort = None
     if rospy.has_param(_socketIO_ip_param):
@@ -175,6 +199,7 @@ class HRIManager:
 
     self.switch_timeout = _switch_connection_timeout
 
+    self.scenario_list = _list_scenario_available
 
   def init_socket_listeners(self):
     """
@@ -310,7 +335,7 @@ class HRIManager:
     self.action_GM_TO_HRI_feedback.Gm_To_Hri_feedback=''
     json_goal=js.loads(goal.json_request)
     if json_goal['action'] == 'RESTART':
-      self.restart_hri()
+      # self.restart_hri()
       self.json_for_GM={
         "result": "Restart done"
       }
@@ -337,8 +362,9 @@ class HRIManager:
 
 
     json_output=self.json_for_GM
-    if 'result' in json_output and json_output['result']=='PREEMPTED':
-      success=False
+    if not json_output is None:
+      if 'result' in json_output and json_output['result']=='PREEMPTED':
+        success=False
 
     self.action_GM_TO_HRI_server.publish_feedback(self.action_GM_TO_HRI_feedback)
     if success:
@@ -352,12 +378,17 @@ class HRIManager:
     """
         Load a view which doesn't have any action name.
     """
+
+    # rospy.logwarn("LOADED STEPS %s",str(self.loaded_steps))
+    # rospy.logwarn("CURRENT INDEX %s",str(self.index))
+
+
     indexToSend = deepcopy(self.index)
     if indexToSend != self.loaded_steps:
       indexToSend = self.loaded_steps
       self.currentStep['order'] = self.loaded_steps
 
-    if indexToSend != 0:
+    if indexToSend != 1:
       stepCompletedJson = {"idSteps": self.indexStepCompleted}
       self.socketIO.emit(rospy.get_param("~socket_emit_step_complete"),stepCompletedJson,broadcast=True)
       rospy.loginfo("{class_name} : ETAPE TERMINEE: ".format(class_name=self.__class__.__name__)+str(self.currentStep['name']))
@@ -389,6 +420,11 @@ class HRIManager:
     """
         Load a view with an action name.
     """
+
+
+    # rospy.logwarn("CURRENT LOADED STEPS %s",str(self.loaded_steps))
+    # rospy.logwarn("CURRENT STEP ORDER %s",str(self.currentStep['order']))
+
     if self.loaded_steps != self.currentStep['order']:
       self.currentStep['order'] = self.loaded_steps
 
@@ -408,7 +444,12 @@ class HRIManager:
     """
     rospy.logwarn("{class_name} : STATIC VIEW : ".format(class_name=self.__class__.__name__)+str(stepIndex))
 
-    if stepIndex == 0:
+    # if stepIndex == 0:
+    #   self.loaded_steps = stepIndex
+    # else:
+    #   self.loaded_steps = self.loaded_steps + 1
+
+    if self.loaded_steps is None:
       self.loaded_steps = stepIndex
     else:
       self.loaded_steps = self.loaded_steps + 1
@@ -427,10 +468,10 @@ class HRIManager:
 
     if self.currentStep['name'] != 'Finish Scenario':
       self.json_for_GM={
-          "indexStep": self.index,
+          "indexStep": self.index-1,
           "actionName": '',
           "NextToDo": "next",
-          "NextIndex": self.index+1
+          "NextIndex": self.index
       }
     else:
       self.json_for_GM={
@@ -457,7 +498,11 @@ class HRIManager:
     """
     rospy.logwarn("{class_name} : DYNAMIC VIEW : ".format(class_name=self.__class__.__name__)+str(stepIndex))
 
-    if stepIndex == 0:
+    # if stepIndex == 0:
+    #   self.loaded_steps = stepIndex
+    # else:
+    #   self.loaded_steps = self.loaded_steps + 1
+    if self.loaded_steps is None:
       self.loaded_steps = stepIndex
     else:
       self.loaded_steps = self.loaded_steps + 1
@@ -578,38 +623,38 @@ class HRIManager:
 
       if self.currentAction == 'findObject':
         self.json_for_GM={
-          "indexStep": self.index,
+          "indexStep": self.index-1,
           "actionName": self.currentAction,
           "scenario": self.choosen_scenario,
           "objectKey": self.currentStep['arguments']['objectKey'],
           "NextToDo": "next",
-          "NextIndex": self.index+1
+          "NextIndex": self.index
         }
       else:
         if self.currentAction == 'objectAction' and 'store' in self.currentStep['id']:
           self.json_for_GM={
-            "indexStep": self.index,
+            "indexStep": self.index-1,
             "actionName": self.currentAction,
             "scenario": self.choosen_scenario,
             "NextToDo": "next",
-            "NextIndex": self.index+2
+            "NextIndex": self.index+1
           }
         elif self.currentAction == 'goTo':
           self.json_for_GM={
-            "indexStep": self.index,
+            "indexStep": self.index-1,
             "actionName": self.currentAction,
             "scenario": self.choosen_scenario,
             "destination": self.currentStep['arguments']['location']['name'],
             "NextToDo": "next",
-            "NextIndex": self.index+1
+            "NextIndex": self.index
           }
         else:
           self.json_for_GM={
-            "indexStep": self.index,
+            "indexStep": self.index-1,
             "actionName": self.currentAction,
             "scenario": self.choosen_scenario,
             "NextToDo": "next",
-            "NextIndex": self.index+1
+            "NextIndex": self.index
           }
       self.event_detected_flag=True
       self.socketIO.wait(seconds=0.1)
@@ -653,11 +698,11 @@ class HRIManager:
 
       if in_procedure == False:
         self.json_for_GM={
-                        "indexStep": self.index,
+                        "indexStep": self.index-1,
                         "actionName": self.currentAction,
                         "dataToUse": self.dataToUse,
                         "NextToDo": "next",
-                        "NextIndex": self.index+1
+                        "NextIndex": self.index
         }
 
 
@@ -733,11 +778,11 @@ class HRIManager:
 
     if procedure_type == 'chooseRoom':
       self.json_for_GM={
-        "indexStep": self.index,
+        "indexStep": self.index-1,
         "actionName": self.currentAction,
         "dataToUse": self.dataToUse,
         "NextToDo": "next",
-        "NextIndex": self.index+1,
+        "NextIndex": self.index,
         "saveData":{
           "action": "storeRoom",
           "what": self.currentStep['arguments']['what'],
@@ -746,11 +791,11 @@ class HRIManager:
       }
     elif procedure_type == 'guestInfos':
       self.json_for_GM={
-        "indexStep": self.index,
+        "indexStep": self.index-1,
         "actionName": self.currentAction,
         "dataToUse": self.dataToUse,
         "NextToDo": "next",
-        "NextIndex": self.index+1,
+        "NextIndex": self.index,
         "saveData":{
           "who": self.currentStep['arguments']['who'],
           "name": self.nameToUse[-1],
@@ -919,7 +964,7 @@ class HRIManager:
     rospy.loginfo("{class_name} : ".format(class_name=self.__class__.__name__)+str(json['data']))
     rospy.loginfo("{class_name} : Index de la vue lancee sur le Touch : ".format(class_name=self.__class__.__name__)+str(json['index']))
 
-  def restart_hri(self):    
+  def restart_hri(self, json):    
     """
         NOT WORKING FOR NOW.
         Callback function when the STOP button is clicked on the screen. Launches a reset of HRI and React.
@@ -927,9 +972,24 @@ class HRIManager:
         :param json: JSON with data of the last event
         :type json: dict 
     """
+    
     self.socketIO.emit(rospy.get_param('~socket_emit_restart_hri'),broadcast=True)
+    self.json_for_GM={
+                        "indexStep": self.index,
+                        "actionName": self.currentAction,
+                        "dataToUse": self.dataToUse,
+                        "NextToDo": "RESTART",
+                        "NextIndex": self.index+1
+    }
 
-    self.init_variables()
+    self.pub_test_restart.publish(True)
+    self.action_GM_TO_HRI_result.Gm_To_Hri_output=js.dumps(self.json_for_GM)
+    rospy.loginfo("{class_name} : Action GM TO HRI succeeded".format(class_name=self.__class__.__name__))
+    
+    self.action_GM_TO_HRI_server.set_succeeded(self.action_GM_TO_HRI_result)
+    self.reset_for_restart()
+
+    # self.init_variables()
 
     rospy.logwarn("{class_name} : HRI RESTARTED".format(class_name=self.__class__.__name__))
     # self.pub_restart_request.publish("RESTART")
@@ -940,5 +1000,6 @@ if __name__ == '__main__':
   hri = HRIManager()
 
   while not rospy.is_shutdown():
+    hri.socketIO.wait(seconds=0.1)
     rospy.spin()
 

@@ -7,8 +7,8 @@ from flask_cors import CORS, cross_origin
 import os 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-with open(dir_path+'/../templates/public/json/scenario_list.json') as p:
-    scenario_list = json.load(p)
+# with open(dir_path+'/../templates/public/json/scenario_list.json') as p:
+#     scenario_list = json.load(p)
 
 
 class MainMenuPalbator:
@@ -20,7 +20,7 @@ class MainMenuPalbator:
 
         text = arguments['speech']['title']
 
-
+        scenario_list = arguments['arguments']['scenario_list']
         
         dataJsonToSendCurrentView = {
                 "view": js_view_key,

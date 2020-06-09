@@ -38,6 +38,17 @@ action_server_hri: "action_GmToHri"
 
 topic_connection_state: "connection_state"
 
-enable_STT: False
+enable_STT: True
 
 switch_connection_timeout: 20
+
+list_scenario_available : [
+    {
+        "id": "Receptionist",
+        "name": "Receptionist2020CPEScenario"
+    },
+    {
+        "id": "Clean Up",
+        "name": "CleanUp2020CPEScenario"
+    }
+]
