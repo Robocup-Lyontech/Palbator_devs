@@ -21,6 +21,13 @@ def handle_my_custom_event(json):
     print('SOCKET BRIDGE INIT')
     return("")
 
+@socketio.on('hideMic')
+@cross_origin()
+def handle_my_custom_event(json):
+    socketio.emit('appVisualChange',json)
+    return("")
+
+
 #### FROM REACT to HRIM ####  STEP 2 Le REACT envoie au HRIM le scenario selectionne afin qu'il load le json necessaire au lancement du scenario
 @socketio.on('askToChangeScenarioGM')
 @cross_origin()

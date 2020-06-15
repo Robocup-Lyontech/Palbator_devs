@@ -18,6 +18,7 @@ import time
 from recorder_v2 import RecorderForSpeechRecog
 import wave
 
+
 # import spacy
 # from spacy.lang.en import English
 # from spacy.lang.en.stop_words import STOP_WORDS
@@ -44,12 +45,19 @@ class SpeechToTextOffline(object):
         self.first_launch=True
         
         self.current_directory=os.path.dirname(os.path.realpath(__file__))      
+
+        
         
         if rospy.has_param('~config_recorder'):
             self.config_recorder = rospy.get_param("~config_recorder")
         else:
             rospy.logerr("{class_name} : No configuration specified for audio recorder".format(class_name=self.__class__.__name__))
 
+        ##### TEST RECORDER AUDIO ######
+        self.rec = RecorderForSpeechRecog(self.config_recorder)
+
+        
+        
         self.audio_dir = self.config_recorder['audio_record_dir']   
 
         self.reset_record_folder()
@@ -94,8 +102,7 @@ class SpeechToTextOffline(object):
         This function will record a audio file and save it to a location specified in configuration file.
         """
 
-        rec = RecorderForSpeechRecog(self.config_recorder)
-        rec.record_audio()
+        self.rec.record_audio()
     
 
     def setup_params(self):

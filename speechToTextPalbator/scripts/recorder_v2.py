@@ -4,20 +4,25 @@ import os
 import ttsMimic.msg
 import rospy
 import actionlib
+from socketIO_client import SocketIO, LoggingNamespace
+
 
 class RecorderForSpeechRecog:
 
     def __init__(self,config):
 
         self.config = config
+        self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+
+
         self.recognizer = sr.Recognizer()
         self.microphone = sr.Microphone()
         self.audio_dir = self.config['audio_record_dir']
         self.current_directory=os.path.dirname(os.path.realpath(__file__))        
         self.client_TTS=actionlib.SimpleActionClient(self.config['tts_service'],ttsMimic.msg.TtsMimicAction)
-        rospy.loginfo("Waiting for TTS server ...")
+        rospy.loginfo("{class_name} : Waiting for TTS server ...".format(class_name=self.__class__.__name__))
         self.client_TTS.wait_for_server()
-        rospy.loginfo("TTS server connected")
+        rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
 
     def tts_action(self,speech):
         """
@@ -48,19 +53,29 @@ class RecorderForSpeechRecog:
             if file.endswith(".wav"):
                 cp = cp+1
 
+        
         with self.microphone as source:
             # self.recognizer.adjust_for_ambient_noise(source,duration=2)
             self.recognizer.adjust_for_ambient_noise(source,duration=self.config['ajusting_ambient_noise_duration'])
-            print('Speak Now my friend!!!!!')
+
+            json_mic ={
+                "hide": False
+            }
+            self.socketIO.emit("hideMic",json_mic,broadcast=True)
+            rospy.loginfo('{class_name} : Speak Now my friend!!!!!'.format(class_name=self.__class__.__name__))
             # self.tts_action('Speak now please')
-            print('Intent '+str(cp+1))
+            rospy.loginfo('{class_name} : Intent %s'.format(class_name=self.__class__.__name__),str(cp+1))
             audio = self.recognizer.listen(source,timeout=self.config['listen_timeout'],phrase_time_limit=self.config['listen_phrase_time_limit'])
 
+        json_mic ={
+            "hide": True
+        }
+        self.socketIO.emit("hideMic",json_mic,broadcast=True)
     
         wav_data=audio.get_wav_data(convert_rate=self.config['convert_rate'],convert_width=self.config['convert_width'])
         with open(self.current_directory+'/'+self.audio_dir+'/intent'+str(cp+1)+'.wav', "wb") as f:
             f.write(wav_data)
-        print('Audio written successfully')
+        rospy.loginfo('{class_name} : Audio written successfully'.format(class_name=self.__class__.__name__))
   
 
 

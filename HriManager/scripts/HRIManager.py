@@ -53,6 +53,7 @@ class HRIManager:
     ######
 
   def load_tablet_menu(self):
+    
     step = {
       "name": "MainMenu",
       "order": 0,
@@ -75,6 +76,11 @@ class HRIManager:
     rospy.loginfo("TABLET CONNECTED AND READY")
     rospy.loginfo("LOADING MENU ON TABLET ...")
 
+    # json_mic ={
+    #   "hide": True
+    # }
+    # self.socketIO.emit("hideMic",json_mic,broadcast=True)
+
     if step['order'] == 0:
       self.loaded_steps = step['order']
     else:
@@ -92,6 +98,12 @@ class HRIManager:
     rospy.loginfo("{class_name} : CHOOSEN SCENARIO : %s".format(class_name=self.__class__.__name__),self.dataToUse)
     if "CPE" in self.dataToUse:
       self.pub.publish(str(self.dataToUse))
+    
+    # json_mic ={
+    #   "hide": False
+    # }
+    # self.socketIO.emit("hideMic",json_mic,broadcast=True)
+   
 
   def init_connection(self):
     self.connection_ON=None

@@ -10,10 +10,16 @@ import json
 import os
 import ttsMimic.msg
 
+from socketIO_client import SocketIO, LoggingNamespace
+
+
 class SpeechToTextOnline(object):
 
     def __init__(self):
         rospy.init_node("STT_online_node")
+
+        self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+
 
         if rospy.has_param("~stt_online_server_name"):
             self.action_server=actionlib.SimpleActionServer(rospy.get_param("~stt_online_server_name"), speechToTextPalbator.msg.SttOnlineAction,self.handle_server_callback,auto_start=False)
@@ -140,10 +146,18 @@ class SpeechToTextOnline(object):
         # from the microphone
         with microphone as source:
             recognizer.adjust_for_ambient_noise(source,duration=self.config_recorder['ajusting_ambient_noise_duration'])
+            json_mic ={
+                "hide": False
+            }
+            self.socketIO.emit("hideMic",json_mic,broadcast=True)
             print("Speak now please")
             # self.tts_action("Speak Now please")
             audio = recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
 
+            json_mic ={
+                "hide": True
+            }
+            self.socketIO.emit("hideMic",json_mic,broadcast=True)
         # set up the response object
         response = {
             "success": True,
