@@ -17,6 +17,7 @@ import datetime
 import time
 from recorder_v2 import RecorderForSpeechRecog
 import wave
+import ttsMimic.msg
 
 
 # import spacy
@@ -56,6 +57,11 @@ class SpeechToTextOffline(object):
         ##### TEST RECORDER AUDIO ######
         self.rec = RecorderForSpeechRecog(self.config_recorder)
 
+        self.client_TTS=actionlib.SimpleActionClient(self.config_recorder['tts_service'],ttsMimic.msg.TtsMimicAction)
+        rospy.loginfo("{class_name} : Waiting for TTS server ...".format(class_name=self.__class__.__name__))
+        self.client_TTS.wait_for_server()
+        rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
+
         
         
         self.audio_dir = self.config_recorder['audio_record_dir']   
@@ -78,18 +84,29 @@ class SpeechToTextOffline(object):
         rospy.on_shutdown(self.shutdown)
         rospy.loginfo("{class_name} : server for STT offline initiated".format(class_name=self.__class__.__name__))
 
+    def tts_action(self,speech):
+        """
+        This function will use the TTS ROSAction to say the speech.
+
+        :param speech: Speech to say
+        :type speech: string
+        """
+        self.goal_TTS=ttsMimic.msg.TtsMimicGoal(speech)
+        self.client_TTS.send_goal(self.goal_TTS)
+        self.client_TTS.wait_for_result()
+    
     def reset_record_folder(self):
-        folder = os.path.join(self.current_directory,self.audio_dir)
-        for filename in os.listdir(folder):
-            file_path = os.path.join(folder, filename)
-            try:
+        try:
+            folder = os.path.join(self.current_directory,self.audio_dir)
+            for filename in os.listdir(folder):
+                file_path = os.path.join(folder, filename)
                 if os.path.isfile(file_path) or os.path.islink(file_path):
                     os.unlink(file_path)
                 elif os.path.isdir(file_path):
                     shutil.rmtree(file_path)
 
-            except Exception as e:
-                rospy.logwarn('{class_name} : Failed to delete %s. Reason: %s'.format(class_name=self.__class__.__name__),file_path, e)
+        except Exception as e:
+            rospy.logwarn('{class_name} : Failed to delete %s. Reason: %s'.format(class_name=self.__class__.__name__),file_path, e)
         
     def shutdown(self):
         """This function is executed on node shutdown."""
@@ -328,6 +345,7 @@ class SpeechToTextOffline(object):
 
             if not self.success:
                 rospy.logwarn("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
+                self.tts_action("I didn't understand what you meant. Please try again.")
 
 
     

@@ -228,6 +228,7 @@ class SpeechToTextOnline(object):
 
         if data == '':
             rospy.loginfo("{class_name} : BAD DETECTION. Please try again".format(class_name=self.__class__.__name__))
+            self.tts_action("I didn't understand what you meant. Please try again")
         
         return data
 
@@ -275,6 +276,7 @@ class SpeechToTextOnline(object):
                 if not guess["success"]:
                     continue
                 print("I didn't catch that. What did you say?\n")
+                self.tts_action("I didn't understand what you meant. Please try again")
                 if guess["error"]:
                     print("ERROR: {}".format(guess["error"]))
                     continue
