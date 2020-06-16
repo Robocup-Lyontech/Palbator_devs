@@ -96,6 +96,7 @@ class SpeechToTextOffline(object):
         self.client_TTS.wait_for_result()
     
     def reset_record_folder(self):
+        file_path = ''
         try:
             folder = os.path.join(self.current_directory,self.audio_dir)
             for filename in os.listdir(folder):
