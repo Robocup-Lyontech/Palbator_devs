@@ -108,6 +108,8 @@ class SpeechToTextOffline(object):
 
         except Exception as e:
             rospy.logwarn('{class_name} : Failed to delete %s. Reason: %s'.format(class_name=self.__class__.__name__),file_path, e)
+            if not os.path.exists(folder):
+                os.makedirs(folder)
         
     def shutdown(self):
         """This function is executed on node shutdown."""
