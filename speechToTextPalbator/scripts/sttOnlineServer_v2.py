@@ -152,34 +152,46 @@ class SpeechToTextOnline(object):
             self.socketIO.emit("hideMic",json_mic,broadcast=True)
             print("Speak now please")
             # self.tts_action("Speak Now please")
-            audio = recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
-
+            try:
+                audio = recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
+                response = {
+                    "success": True,
+                    "error": None,
+                    "transcription": None
+                }
+            except sr.WaitTimeoutError as e:
+                response = {
+                    "success": False,
+                    "error": None,
+                    "transcription": None
+                }
             json_mic ={
                 "hide": True
             }
             self.socketIO.emit("hideMic",json_mic,broadcast=True)
         # set up the response object
-        response = {
-            "success": True,
-            "error": None,
-            "transcription": None
-        }
+        
+        if response["success"] == False:
+            response["error"] = "Audio Timeout"
+            return response
+        
+        else:
 
         # try recognizing the speech in the recording
         # if a RequestError or UnknownValueError exception is caught,
         #     update the response object accordingly
-        try:
-            response["transcription"] = recognizer.recognize_google(audio)
+            try:
+                response["transcription"] = recognizer.recognize_google(audio)
 
-        except sr.RequestError:
-            # API was unreachable or unresponsive
-            response["success"] = False
-            response["error"] = "API unavailable"
-        except sr.UnknownValueError:
-            # speech was unintelligible
-            response["error"] = "Unable to recognize speech"
+            except sr.RequestError:
+                # API was unreachable or unresponsive
+                response["success"] = False
+                response["error"] = "API unavailable"
+            except sr.UnknownValueError:
+                # speech was unintelligible
+                response["error"] = "Unable to recognize speech"
 
-        return response
+            return response
 
 
     def process_detection(self,transcription):

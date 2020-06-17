@@ -24,6 +24,8 @@ class RecorderForSpeechRecog:
         self.client_TTS.wait_for_server()
         rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
 
+        self.audio_correctly_recorded = None
+
     def tts_action(self,speech):
         """
         This function will use the TTS ROSAction to say the speech.
@@ -65,17 +67,24 @@ class RecorderForSpeechRecog:
             rospy.loginfo('{class_name} : Speak Now my friend!!!!!'.format(class_name=self.__class__.__name__))
             # self.tts_action('Speak now please')
             rospy.loginfo('{class_name} : Intent %s'.format(class_name=self.__class__.__name__),str(cp+1))
-            audio = self.recognizer.listen(source,timeout=self.config['listen_timeout'],phrase_time_limit=self.config['listen_phrase_time_limit'])
+            try:
+                audio = self.recognizer.listen(source,timeout=self.config['listen_timeout'],phrase_time_limit=self.config['listen_phrase_time_limit'])
+                self.audio_correctly_recorded = True
+                rospy.loginfo("{class_name} : Audio recorded successfully".format(class_name=self.__class__.__name__))
+            except sr.WaitTimeoutError as e:
+                rospy.logwarn("{class_name} : Audio not recorded : %s".format(class_name=self.__class__.__name__),str(e))
+                self.audio_correctly_recorded = False
 
         json_mic ={
             "hide": True
         }
         self.socketIO.emit("hideMic",json_mic,broadcast=True)
-    
-        wav_data=audio.get_wav_data(convert_rate=self.config['convert_rate'],convert_width=self.config['convert_width'])
-        with open(self.current_directory+'/'+self.audio_dir+'/intent'+str(cp+1)+'.wav', "wb") as f:
-            f.write(wav_data)
-        rospy.loginfo('{class_name} : Audio written successfully'.format(class_name=self.__class__.__name__))
+
+        if self.audio_correctly_recorded:
+            wav_data=audio.get_wav_data(convert_rate=self.config['convert_rate'],convert_width=self.config['convert_width'])
+            with open(self.current_directory+'/'+self.audio_dir+'/intent'+str(cp+1)+'.wav', "wb") as f:
+                f.write(wav_data)
+            rospy.loginfo('{class_name} : Audio written successfully'.format(class_name=self.__class__.__name__))
   
 
 

@@ -266,87 +266,89 @@ class SpeechToTextOffline(object):
                 break
 
             self.record_audio()
-            rospy.loginfo("{class_name} : Audio Reading in process ---------".format(class_name=self.__class__.__name__))
-            self.decoder.start_utt()
-            cp=0
-            for file in os.listdir(os.path.join(self.current_directory,self.audio_dir)):
-                if file.endswith(".wav"):
-                    cp = cp+1
 
-            chunk = 1024
-            filename = os.path.join(self.current_directory,self.audio_dir)+'/intent'+str(cp)+'.wav'
-            wf = wave.open(filename, 'rb')
-            print("{class_name} : Loading file : ".format(class_name=self.__class__.__name__)+str(filename))
-            p = pyaudio.PyAudio()
-            stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
-                        channels = wf.getnchannels(),
-                        rate = wf.getframerate(),
-                        output = True)
-            data = wf.readframes(chunk)
+            if self.rec.audio_correctly_recorded:
+                rospy.loginfo("{class_name} : Audio Reading in process ---------".format(class_name=self.__class__.__name__))
+                self.decoder.start_utt()
+                cp=0
+                for file in os.listdir(os.path.join(self.current_directory,self.audio_dir)):
+                    if file.endswith(".wav"):
+                        cp = cp+1
 
-            list_detection=[]
-            
-            while data != '':
-                buf=data
-                if buf:
-                    self.decoder.process_raw(buf, False, False)
-                else:
-                    break
-
-                if self.decoder.get_in_speech() != self.in_speech_bf:
-                    self.in_speech_bf = self.decoder.get_in_speech()
-                    if not self.in_speech_bf:
-                        self.decoder.end_utt()
-                        if self.decoder.hyp() is not None:
-                            print([(seg.word, float(seg.prob), seg.start_frame, seg.end_frame) for seg in self.decoder.seg()])
-                            print("--------------------------------------")
-                            print("{class_name} : ".format(class_name=self.__class__.__name__) + "Detected %s at %s" % (self.decoder.hyp().hypstr, str(datetime.datetime.now().time())))
-                            print("--------------------------------------")
-                            print('{class_name} : Score: '.format(class_name=self.__class__.__name__) + str(self.decoder.hyp().best_score))
-                            logmath=self.decoder.get_logmath()
-                            print('{class_name} : Score LOG: '.format(class_name=self.__class__.__name__) + str(logmath.exp(self.decoder.hyp().best_score)))
-                            list_detection.append(self.decoder.hyp().hypstr)
-
-                        self.decoder.start_utt()
+                chunk = 1024
+                filename = os.path.join(self.current_directory,self.audio_dir)+'/intent'+str(cp)+'.wav'
+                wf = wave.open(filename, 'rb')
+                print("{class_name} : Loading file : ".format(class_name=self.__class__.__name__)+str(filename))
+                p = pyaudio.PyAudio()
+                stream = p.open(format = p.get_format_from_width(wf.getsampwidth()),
+                            channels = wf.getnchannels(),
+                            rate = wf.getframerate(),
+                            output = True)
                 data = wf.readframes(chunk)
-            stream.close()
-            self.decoder.end_utt()
+
+                list_detection=[]
+                
+                while data != '':
+                    buf=data
+                    if buf:
+                        self.decoder.process_raw(buf, False, False)
+                    else:
+                        break
+
+                    if self.decoder.get_in_speech() != self.in_speech_bf:
+                        self.in_speech_bf = self.decoder.get_in_speech()
+                        if not self.in_speech_bf:
+                            self.decoder.end_utt()
+                            if self.decoder.hyp() is not None:
+                                print([(seg.word, float(seg.prob), seg.start_frame, seg.end_frame) for seg in self.decoder.seg()])
+                                print("--------------------------------------")
+                                print("{class_name} : ".format(class_name=self.__class__.__name__) + "Detected %s at %s" % (self.decoder.hyp().hypstr, str(datetime.datetime.now().time())))
+                                print("--------------------------------------")
+                                print('{class_name} : Score: '.format(class_name=self.__class__.__name__) + str(self.decoder.hyp().best_score))
+                                logmath=self.decoder.get_logmath()
+                                print('{class_name} : Score LOG: '.format(class_name=self.__class__.__name__) + str(logmath.exp(self.decoder.hyp().best_score)))
+                                list_detection.append(self.decoder.hyp().hypstr)
+
+                            self.decoder.start_utt()
+                    data = wf.readframes(chunk)
+                stream.close()
+                self.decoder.end_utt()
 
 
-            
-            for item in list_detection:
-                if self.dictionary_choose == "age":
-                    if " " in item:
-                        list_in_item = item.split(" ")
-                        for cut in list_in_item:
+                
+                for item in list_detection:
+                    if self.dictionary_choose == "age":
+                        if " " in item:
+                            list_in_item = item.split(" ")
+                            for cut in list_in_item:
+                                try:
+                                    test = int(cut)
+                                    self.success=True
+                                    self.output=cut
+                                    rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
+                                    break
+                                except ValueError:
+                                    pass
+                        else:
                             try:
-                                test = int(cut)
+                                test = int(item)
                                 self.success=True
-                                self.output=cut
+                                self.output=item
                                 rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
                                 break
                             except ValueError:
                                 pass
                     else:
-                        try:
-                            test = int(item)
-                            self.success=True
-                            self.output=item
-                            rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
-                            break
-                        except ValueError:
-                            pass
-                else:
-                    for element in self.database_words:
-                        if element in item:
-                            self.success=True
-                            self.output=element
-                            rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
-                            break
+                        for element in self.database_words:
+                            if element in item:
+                                self.success=True
+                                self.output=element
+                                rospy.loginfo("{class_name} : GOOD DETECTION!!!!!".format(class_name=self.__class__.__name__))
+                                break
 
-            if not self.success:
-                rospy.logwarn("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
-                self.tts_action("I didn't understand what you meant. Please try again.")
+                if not self.success:
+                    rospy.logwarn("{class_name} : Uncorrect detection. Please try again".format(class_name=self.__class__.__name__))
+                    self.tts_action("I didn't understand what you meant. Please try again.")
 
 
     
