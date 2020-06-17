@@ -1,3 +1,5 @@
+A	/1e-9/
+A(2)	/1e-9/
 AM	/1e-9/
 AM(2)	/1e-9/
 AMY	/1e-9/
@@ -53,6 +55,8 @@ ICE	/1e-9/
 IS	/1e-9/
 JACK	/1e-9/
 JOHN	/1e-9/
+LIKE    /1e-9/
+LOVE    /1e-9/
 MATT	/1e-9/
 MY	/1e-9/
 NAME	/1e-9/
@@ -79,6 +83,9 @@ ORANGINA	/1e-9/
 ORANGINA(2)	/1e-9/
 PEPPER	/1e-9/
 PEPSI	/1e-9/
+PREFER	/1e-9/
+PREFER(2)	/1e-9/
+PREFER(3)	/1e-9/
 RORY	/1e-9/
 ROSE	/1e-9/
 SALLY	/1e-9/
@@ -136,4 +143,6 @@ TEA	/1e-9/
 22	/1e-9/
 2	/1e-9/
 UP	/1e-9/
+WANT	/1e-9/
+WANT(2)	/1e-9/
 YES	/1e-9/

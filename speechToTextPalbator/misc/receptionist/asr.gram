@@ -10,7 +10,7 @@ public <rule> = <confirmation> | [<presentationAge>] <age> | [<presentationName>
 
 <presentationName> = I AM | MY NAME IS;
 
-<presentationDrink> = MY FAVOURITE DRINK IS;
+<presentationDrink> = MY FAVOURITE DRINK IS | I LIKE | I LOVE | I WANT A | I PREFER A;
 
 <presentationAge> = I AM;
 
