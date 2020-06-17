@@ -139,7 +139,10 @@ class SpeechToTextOffline(object):
         _kwlist = "kwlist"
 
         if rospy.has_param(_hmm_param):
-            self.hmm = rospy.get_param(_hmm_param)
+            language_model_path = rospy.get_param(_hmm_param)
+            self.hmm = os.path.join(self.current_directory,language_model_path)
+            rospy.loginfo("{class_name} : Language model path : %s".format(class_name=self.__class__.__name__),self.hmm)
+
         else:
             rospy.logerr("{class_name} : No language model specified. Couldn't find default model.".format(class_name=self.__class__.__name__))
             return
@@ -147,7 +150,7 @@ class SpeechToTextOffline(object):
         if _dict_param in self.config_scenario:
             dict_path = self.config_scenario[_dict_param]
             self.dict=os.path.join(self.current_directory,dict_path)
-            rospy.loginfo("{class_name} : Dict path : ".format(class_name=self.__class__.__name__)+str(dict_path))
+            rospy.loginfo("{class_name} : Dict path : %s".format(class_name=self.__class__.__name__),str(dict_path))
         else:
             rospy.logerr("{class_name} : No dictionary found. Please add an appropriate dictionary argument.".format(class_name=self.__class__.__name__))
             return

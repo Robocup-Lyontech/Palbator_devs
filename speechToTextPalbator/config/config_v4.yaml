@@ -15,7 +15,7 @@ config_recorder: {
 
 ############### Speech Recognition servers configuration ##########
 
-hmm: "/usr/local/lib/python2.7/dist-packages/pocketsphinx/model/en-us"
+hmm: "../config/model/en-us"
 
 config: {
     Receptionist: {
