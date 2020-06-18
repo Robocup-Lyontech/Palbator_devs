@@ -65,4 +65,6 @@ stt_offline_server_name: "action_STT_offline"
 
 stt_online_server_name: "action_STT_online"
 
+stt_server_name: "STT_action_server"
+
 tts_server_name: "action_TTS_MIMIC"

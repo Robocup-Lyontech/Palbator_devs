@@ -1,6 +1,6 @@
 <launch>
 
-    <include file="$(find speechToTextPalbator)/launch/voice_control.launch" />
+    <include file="$(find speechToTextPalbator)/launch/stt_global_v2.launch" />
 
     <include file="$(find connectionManager)/launch/connectionManager.launch" />
 

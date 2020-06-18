@@ -14,7 +14,7 @@ from rospy.exceptions import ROSException, ROSInterruptException
 
 
 from python_depend.views import Views
-import speechToTextPalbator.msg
+from speechToTextPalbator.msg import SpeechRecognitionAction, SpeechRecognitionGoal
 
 import ttsMimic.msg
 
@@ -166,6 +166,9 @@ class HRIManager:
     _topic_choice_scenario = rospy.get_param("~topic_choice_scenario")
     _stt_online_server_name = rospy.get_param("~stt_online")
     _stt_offline_server_name = rospy.get_param("~stt_offline")
+
+    _stt_server_name = rospy.get_param("~stt_server")
+
     _tts_mimic_server_name = rospy.get_param("~tts_mimic")
     _action_server_hri_name = rospy.get_param("~action_server_hri")
     _switch_connection_timeout = rospy.get_param("~switch_connection_timeout")
@@ -190,20 +193,27 @@ class HRIManager:
 
     self.pub_choice_scenario=rospy.Publisher(_topic_choice_scenario,String,queue_size=1)
 
-    self.action_online_client = actionlib.SimpleActionClient(_stt_online_server_name,speechToTextPalbator.msg.SttOnlineAction)
-    self.action_offline_client = actionlib.SimpleActionClient(_stt_offline_server_name,speechToTextPalbator.msg.SttOfflineAction)
+    # self.action_online_client = actionlib.SimpleActionClient(_stt_online_server_name,speechToTextPalbator.msg.SttOnlineAction)
+    # self.action_offline_client = actionlib.SimpleActionClient(_stt_offline_server_name,speechToTextPalbator.msg.SttOfflineAction)
+
+    self.action_stt_client = actionlib.SimpleActionClient(_stt_server_name,SpeechRecognitionAction)
+
+
     self.client_TTS=actionlib.SimpleActionClient(_tts_mimic_server_name,ttsMimic.msg.TtsMimicAction)
     self.action_GM_TO_HRI_server=actionlib.SimpleActionServer(_action_server_hri_name,GmToHriAction,self.action_GmToHri_callback,auto_start=False)
     self.action_GM_TO_HRI_feedback=GmToHriFeedback()
     self.action_GM_TO_HRI_result=GmToHriResult()
     if self.enable_vocal_detection == True:
-      rospy.loginfo("{class_name} : Waiting for STT online server...".format(class_name=self.__class__.__name__))
-      self.action_online_client.wait_for_server()
-      rospy.loginfo("{class_name} : Connected to STT online server".format(class_name=self.__class__.__name__))
+      # rospy.loginfo("{class_name} : Waiting for STT online server...".format(class_name=self.__class__.__name__))
+      # self.action_online_client.wait_for_server()
+      # rospy.loginfo("{class_name} : Connected to STT online server".format(class_name=self.__class__.__name__))
 
-      rospy.loginfo("{class_name} : Waiting for STT offline server...".format(class_name=self.__class__.__name__))
-      self.action_offline_client.wait_for_server()
-      rospy.loginfo("{class_name} : Connected to STT offline server".format(class_name=self.__class__.__name__))
+      # rospy.loginfo("{class_name} : Waiting for STT offline server...".format(class_name=self.__class__.__name__))
+      # self.action_offline_client.wait_for_server()
+      # rospy.loginfo("{class_name} : Connected to STT offline server".format(class_name=self.__class__.__name__))
+      rospy.loginfo("{class_name} : Waiting for STT server...".format(class_name=self.__class__.__name__))
+      self.action_stt_client.wait_for_server()
+      rospy.loginfo("{class_name} : Connected to STT server".format(class_name=self.__class__.__name__))
 
     rospy.loginfo("{class_name} : Waiting for TTS server...".format(class_name=self.__class__.__name__))
     self.client_TTS.wait_for_server()
@@ -232,14 +242,15 @@ class HRIManager:
     """
         Callback function when a connection state change is detected
     """
-    if self.enable_changing_connection==True:
-      if req.data=='Connected':
-        self.action_offline_client.cancel_all_goals()
-        self.connection_ON=True
-          
-      elif req.data=='Disconnected':
-        self.action_online_client.cancel_all_goals()
-        self.connection_ON=False
+    # if self.enable_changing_connection==True:
+    if req.data=='Connected':
+      # self.action_offline_client.cancel_all_goals()
+      # self.action_stt_client.cancel_all_goals()
+      self.connection_ON=True
+        
+    elif req.data=='Disconnected':
+      # self.action_online_client.cancel_all_goals()
+      self.connection_ON=False
 
 
   def tts_action(self,speech):
@@ -698,11 +709,27 @@ class HRIManager:
       self.event_touch = False
 
       if self.enable_vocal_detection == True:
-        if self.connection_ON==True:
-          self.routine_online()
+        # if self.connection_ON==True:
+        #   self.routine_online()
 
-        elif self.connection_ON==False:
-          self.routine_offline()
+        # elif self.connection_ON==False:
+        #   self.routine_offline()
+        for i in range(0,5):
+          rospy.loginfo("{class_name} : intent %s".format(class_name=self.__class__.__name__),str(i))
+          data_STT = self.vocal_detection()
+          if not data_STT is None:
+            if data_STT == 'EVENT_REQUEST':
+              break
+            else:
+              self.dataToUse = data_STT
+              break
+        
+        if data_STT is None:
+          self.tts_action("I am currently not able to understand you. Please click on a button to continue the scenario")
+          while self.event_touch == False:
+            self.socketIO.wait(0.1)
+          self.event_touch = False
+
       else:
         while self.event_touch == False:
           self.socketIO.wait(0.1)
@@ -817,76 +844,119 @@ class HRIManager:
       }
     rospy.loginfo("{class_name} : END PROCEDURE ".format(class_name=self.__class__.__name__)+str(procedure_type))
 
-  def routine_online(self):
-    """
-        Function to use the online Speech Detection. If the counter reaches the timeout, the system will switch to offline Speech Detection. 
-    """
-    rospy.loginfo("{class_name} : ----------- DEBUT ROUTINE ONLINE--------------------------------".format(class_name=self.__class__.__name__))
-    self.goal_online = speechToTextPalbator.msg.SttOnlineGoal()
-    rospy.loginfo("{class_name} : Sending goal to online ...".format(class_name=self.__class__.__name__))
-    order={
-        'order': self.index,
-        'action': self.currentAction,
-        'scenario': self.choosen_scenario
+  
+  def vocal_detection(self):
+    rospy.loginfo("{class_name} : ----------- DEBUT DETECTION VOCALE--------------------------------".format(class_name=self.__class__.__name__))
+
+    goal_stt = SpeechRecognitionGoal()
+    data_STT = None
+    json_goal = {
+      "order": self.index,
+      "action": self.currentAction,
+      "scenario": self.choosen_scenario,
+      "connection_state": None
     }
-    json_in_str=js.dumps(order)
-    self.goal_online.order=json_in_str
-    self.action_online_client.send_goal(self.goal_online)
-    cp=0
-    while self.action_online_client.get_result() is None and not rospy.is_shutdown():
-      if cp == self.switch_timeout or self.connection_ON == False:
-        self.action_online_client.cancel_all_goals()
-        self.tts_action('Switching to offline mode')
-        break
-      elif self.event_touch == True:
-        self.action_online_client.cancel_all_goals()
-        break
 
-      rospy.loginfo("{class_name} : Waiting for online detect ....".format(class_name=self.__class__.__name__))
-      cp=cp+1
-      self.socketIO.wait(seconds=0.1)
-
-    rospy.loginfo("{class_name} : "+str(self.action_online_client.get_result()))
-    if not self.action_online_client.get_result() is None and self.action_online_client.get_result().stt_result != '':
-      self.dataToUse=str(self.action_online_client.get_result().stt_result)
-    elif self.event_touch==True:
-      self.event_touch = False
-      rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
+    if self.connection_ON:
+      json_goal['connection_state'] = "Online"
     else:
-      self.enable_changing_connection=False
-      self.routine_offline()
-      self.enable_changing_connection=True
+      json_goal['connection_state'] = "Offline"
 
-    rospy.loginfo("{class_name} : ----------- FIN ROUTINE ONLINE--------------------------------".format(class_name=self.__class__.__name__))
+    goal_stt.order = js.dumps(json_goal)
 
-  def routine_offline(self):
-    """
-        Function to use the offline Speech Detection. 
-    """
-    rospy.loginfo("{class_name} : ----------- DEBUT ROUTINE OFFLINE--------------------------------".format(class_name=self.__class__.__name__))
-    self.goal_offline = speechToTextPalbator.msg.SttOfflineGoal()
-    rospy.loginfo("{class_name} : Sending goal to offline ...".format(class_name=self.__class__.__name__))
-    order={
-        'order': self.index,
-        'action': self.currentAction,
-        'scenario': self.choosen_scenario
-    }
-    json_in_str=js.dumps(order)
-    self.goal_offline.order=json_in_str
-    self.action_offline_client.send_goal(self.goal_offline)
-    while self.action_offline_client.get_result() is None and not rospy.is_shutdown():
-      if self.event_touch == True:
-        self.action_offline_client.cancel_all_goals()
-        self.event_touch = False
-        rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
+    self.action_stt_client.send_goal(goal_stt)
+
+    while self.action_stt_client.get_result() is None and not rospy.is_shutdown():
+      if self.event_touch:
+        self.action_stt_client.cancel_all_goals()
         break
-      rospy.loginfo("{class_name} : Waiting for OFFLINE detect ....".format(class_name=self.__class__.__name__))
       self.socketIO.wait(seconds=0.1)
-    rospy.loginfo("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.action_offline_client.get_result()))
-    if not self.action_offline_client.get_result() is None:
-      if str(self.action_offline_client.get_result().stt_result) != '':
-        self.dataToUse=str(self.action_offline_client.get_result().stt_result)
-    rospy.loginfo("{class_name} : ----------- FIN ROUTINE OFFLINE--------------------------------".format(class_name=self.__class__.__name__))
+
+    rospy.loginfo("{class_name} : %s".format(class_name=self.__class__.__name__),str(self.action_stt_client.get_result()))
+
+    if not self.action_stt_client.get_result() is None and self.action_stt_client.get_result().stt_result != '':
+
+      json_data_in_str=str(self.action_stt_client.get_result().stt_result)
+      json_data = js.loads(json_data_in_str)
+      data_STT = json_data['stt_result']
+    elif self.event_touch==True:
+      data_STT = "EVENT_REQUEST"
+      self.event_touch = False
+
+    rospy.loginfo("{class_name} : ----------- FIN DETECTION VOCALE--------------------------------".format(class_name=self.__class__.__name__))
+
+    return data_STT
+  
+  # def routine_online(self):
+  #   """
+  #       Function to use the online Speech Detection. If the counter reaches the timeout, the system will switch to offline Speech Detection. 
+  #   """
+  #   rospy.loginfo("{class_name} : ----------- DEBUT ROUTINE ONLINE--------------------------------".format(class_name=self.__class__.__name__))
+  #   self.goal_online = speechToTextPalbator.msg.SttOnlineGoal()
+  #   rospy.loginfo("{class_name} : Sending goal to online ...".format(class_name=self.__class__.__name__))
+  #   order={
+  #       'order': self.index,
+  #       'action': self.currentAction,
+  #       'scenario': self.choosen_scenario
+  #   }
+  #   json_in_str=js.dumps(order)
+  #   self.goal_online.order=json_in_str
+  #   self.action_online_client.send_goal(self.goal_online)
+  #   cp=0
+  #   while self.action_online_client.get_result() is None and not rospy.is_shutdown():
+  #     if cp == self.switch_timeout or self.connection_ON == False:
+  #       self.action_online_client.cancel_all_goals()
+  #       self.tts_action('Switching to offline mode')
+  #       break
+  #     elif self.event_touch == True:
+  #       self.action_online_client.cancel_all_goals()
+  #       break
+
+  #     rospy.loginfo("{class_name} : Waiting for online detect ....".format(class_name=self.__class__.__name__))
+  #     cp=cp+1
+  #     self.socketIO.wait(seconds=0.1)
+
+  #   rospy.loginfo("{class_name} : "+str(self.action_online_client.get_result()))
+  #   if not self.action_online_client.get_result() is None and self.action_online_client.get_result().stt_result != '':
+  #     self.dataToUse=str(self.action_online_client.get_result().stt_result)
+  #   elif self.event_touch==True:
+  #     self.event_touch = False
+  #     rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
+  #   else:
+  #     self.enable_changing_connection=False
+  #     self.routine_offline()
+  #     self.enable_changing_connection=True
+
+  #   rospy.loginfo("{class_name} : ----------- FIN ROUTINE ONLINE--------------------------------".format(class_name=self.__class__.__name__))
+
+  # def routine_offline(self):
+  #   """
+  #       Function to use the offline Speech Detection. 
+  #   """
+  #   rospy.loginfo("{class_name} : ----------- DEBUT ROUTINE OFFLINE--------------------------------".format(class_name=self.__class__.__name__))
+  #   self.goal_offline = speechToTextPalbator.msg.SttOfflineGoal()
+  #   rospy.loginfo("{class_name} : Sending goal to offline ...".format(class_name=self.__class__.__name__))
+  #   order={
+  #       'order': self.index,
+  #       'action': self.currentAction,
+  #       'scenario': self.choosen_scenario
+  #   }
+  #   json_in_str=js.dumps(order)
+  #   self.goal_offline.order=json_in_str
+  #   self.action_offline_client.send_goal(self.goal_offline)
+  #   while self.action_offline_client.get_result() is None and not rospy.is_shutdown():
+  #     if self.event_touch == True:
+  #       self.action_offline_client.cancel_all_goals()
+  #       self.event_touch = False
+  #       rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
+  #       break
+  #     rospy.loginfo("{class_name} : Waiting for OFFLINE detect ....".format(class_name=self.__class__.__name__))
+  #     self.socketIO.wait(seconds=0.1)
+  #   rospy.loginfo("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.action_offline_client.get_result()))
+  #   if not self.action_offline_client.get_result() is None:
+  #     if str(self.action_offline_client.get_result().stt_result) != '':
+  #       self.dataToUse=str(self.action_offline_client.get_result().stt_result)
+  #   rospy.loginfo("{class_name} : ----------- FIN ROUTINE OFFLINE--------------------------------".format(class_name=self.__class__.__name__))
 
   def indexDataJSstepDone(self,json):
     """
@@ -915,8 +985,9 @@ class HRIManager:
       self.event_touch = True
       rospy.logwarn("{class_name} : EVENT TOUCH ".format(class_name=self.__class__.__name__)+str(self.event_touch))
       rospy.loginfo("{class_name} : DONNEE RECUE DEPUIS TOUCH MANAGER".format(class_name=self.__class__.__name__))
-      self.action_online_client.cancel_all_goals()
-      self.action_offline_client.cancel_all_goals()
+      # self.action_online_client.cancel_all_goals()
+      # self.action_offline_client.cancel_all_goals()
+      self.action_stt_client.cancel_all_goals()
       self.data_received=True
       self.dataToUse = json['data']
       rospy.loginfo("{class_name} : DONNEE TOUCH MANAGER: ".format(class_name=self.__class__.__name__)+str(self.dataToUse))
