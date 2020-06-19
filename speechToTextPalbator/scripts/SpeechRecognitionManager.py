@@ -276,12 +276,21 @@ class AudioThread(Thread):
                 self.socketIO.emit("hideMic",json_mic,broadcast=True)
                 self.recognizer.adjust_for_ambient_noise(source,duration=self.config_recorder['ajusting_ambient_noise_duration'])
                 rospy.loginfo("{class_name} : Starts listening".format(class_name=self.__class__.__name__))
-                audio = self.recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
-                response = {
-                        "success": True,
-                        "error": None,
-                        "transcription": None
-                }
+                try:
+                    audio = self.recognizer.listen(source,timeout=self.config_recorder['listen_timeout'],phrase_time_limit=self.config_recorder['listen_phrase_time_limit'])
+                    response = {
+                            "success": True,
+                            "error": None,
+                            "transcription": None
+                    }
+                except sr.WaitTimeoutError:
+                    rospy.logwarn('{class_name} : Listen Timeout Error'.format(class_name=self.__class__.__name__))
+                    response = {
+                            "success": False,
+                            "error": None,
+                            "transcription": None
+                    }
+                    audio = None
 
             json_mic ={
                 "hide": True

@@ -21,6 +21,13 @@ def handle_my_custom_event(json):
     print('SOCKET BRIDGE INIT')
     return("")
 
+
+@socketio.on('sendPeopleListDebug')
+@cross_origin()
+def handle_my_custom_event(json):
+    socketio.emit('debugGetPeopleList',json)
+    return("")
+
 @socketio.on('hideMic')
 @cross_origin()
 def handle_my_custom_event(json):
