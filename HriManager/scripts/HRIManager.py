@@ -715,6 +715,15 @@ class HRIManager:
         # elif self.connection_ON==False:
         #   self.routine_offline()
         for i in range(0,5):
+          if i == 1:
+            self.tts_action("Could you repeat please ?")
+          elif i == 2:
+            self.tts_action("Say it again please?")
+          elif i == 3:
+            self.tts_action("Sorry I missed that. Could you repeat please ?")
+          elif i == 4:
+            self.tts_action("I couldn't understand. Please try again.")
+
           rospy.loginfo("{class_name} : intent %s".format(class_name=self.__class__.__name__),str(i))
           data_STT = self.vocal_detection()
           if not data_STT is None:
