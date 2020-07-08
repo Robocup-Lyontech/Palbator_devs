@@ -4,6 +4,8 @@
 
     <include file="$(find connectionManager)/launch/connectionManager.launch" />
 
+    <include file="$(find ttsMimic)/launch/TTS.launch" />
+
 
     <arg name="config" default="$(find HriManager)/config/config_HRI.yaml" doc="Path to parameter config file"/>
 

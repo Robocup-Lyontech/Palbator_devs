@@ -65,4 +65,4 @@ stt_server_name: "STT_action_server"
 
 tts_server_name: "action_TTS_MIMIC"
 
-test_mode: False
+test_mode: True

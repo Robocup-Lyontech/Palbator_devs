@@ -167,7 +167,7 @@ class HRIManager:
     _stt_online_server_name = rospy.get_param("~stt_online")
     _stt_offline_server_name = rospy.get_param("~stt_offline")
 
-    _stt_server_name = rospy.get_param("~stt_server")
+    _stt_server_name = rospy.get_param("~stt_server_name")
 
     _tts_mimic_server_name = rospy.get_param("~tts_mimic")
     _action_server_hri_name = rospy.get_param("~action_server_hri")

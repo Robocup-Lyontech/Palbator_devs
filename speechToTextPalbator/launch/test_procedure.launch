@@ -3,7 +3,7 @@
     <!--
     Args with no default attribute are not optional
     -->
-    <arg name="config" default="$(find speechToTextPalbator)/config/config_v5.yaml" doc="Path to parameter config file"/>
+    <arg name="config" default="$(find speechToTextPalbator)/config/config_test_procedure.yaml" doc="Path to parameter config file"/>
     
     <!--
     Node for handling jsgf grammar mode
@@ -16,6 +16,12 @@
         >
 	    <rosparam file="$(arg config)"/>
 	</node>
+
+    <node name="stt_client" pkg="speechToTextPalbator" type="client_for_test_procedure_STT.py" output="screen">
+	    <rosparam file="$(arg config)"/>
+    </node>
+
+
 
 
     

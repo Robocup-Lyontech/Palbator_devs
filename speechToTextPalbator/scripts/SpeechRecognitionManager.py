@@ -270,10 +270,11 @@ class AudioThread(Thread):
 
             ##### RECORDING #######
             with self.micro as source:
-                json_mic ={
-                    "hide": False
-                }
-                self.socketIO.emit("hideMic",json_mic,broadcast=True)
+                if not self.socketIO is None:
+                    json_mic ={
+                        "hide": False
+                    }
+                    self.socketIO.emit("hideMic",json_mic,broadcast=True)
                 self.recognizer.adjust_for_ambient_noise(source,duration=self.config_recorder['ajusting_ambient_noise_duration'])
                 rospy.loginfo("{class_name} : Starts listening".format(class_name=self.__class__.__name__))
                 try:
@@ -291,11 +292,12 @@ class AudioThread(Thread):
                             "transcription": None
                     }
                     audio = None
-
-            json_mic ={
-                "hide": True
-            }
-            self.socketIO.emit("hideMic",json_mic,broadcast=True)
+            
+            if not self.socketIO is None:
+                json_mic ={
+                    "hide": True
+                }
+                self.socketIO.emit("hideMic",json_mic,broadcast=True)
 
             ###### AUDIO PROCESSED FOR ONLINE #####
             if self.goal['connection_state'] == 'Online':
@@ -411,7 +413,12 @@ class SpeechRecognitionManager():
     def __init__(self):
         rospy.init_node("speech_recognition_manager",anonymous=True)
 
-        self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+        self.test_mode = rospy.get_param("~test_mode")
+
+        if not self.test_mode:
+            self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+        else:
+            self.socketIO = None
 
         if rospy.has_param("~stt_server_name"):
             self.STT_server = actionlib.SimpleActionServer(rospy.get_param("~stt_server_name"),SpeechRecognitionAction, self.handle_STT_action,False)
