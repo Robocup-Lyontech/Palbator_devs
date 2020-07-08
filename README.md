@@ -38,8 +38,8 @@ If there are issues with pyaudio, those command lines could solve them:
 - sudo pip uninstall pyaudio or sudo apt-get purge --auto-remove python-pyaudio
 - sudo apt-get install portaudio19-dev python-all-dev python3-all-dev && sudo pip install pyaudio
 
-## Launch speechToTextPalbator
-- roslaunch speechToTextPalbator stt_global_v2.launch
+## Test speechToTextPalbator
+- roslaunch speechToTextPalbator test_procedure.launch
 
 ## Global launch : flask server + HRI + STT + TTS :
 - roslaunch HriManager hri_manager.launch
