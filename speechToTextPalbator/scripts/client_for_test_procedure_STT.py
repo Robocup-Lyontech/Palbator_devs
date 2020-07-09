@@ -44,8 +44,22 @@ class ClientSTT():
 if __name__ == "__main__":
     instance_client = ClientSTT()
 
-    while not rospy.is_shutdown():
+
+    print("------------------ \n Test speech recognition online. Make sure your internet connection is available.\n --------------------")
+    raw_input("To test the online speech recognition, please say one of the names in the list (which will appear later) when the mic will listen. To run the test, press Enter")
+    instance_client.vocal_detection('Online')
+
+    response = raw_input("Do you want to test one more time the online speech recognition ? (Y/N)")
+    while response =="Y" or response == "y":
+        response = None
         instance_client.vocal_detection('Online')
-        rospy.sleep(2)
-        instance_client.vocal_detection("Offline")
-        rospy.sleep(2)
+        response = raw_input("Do you want to test one more time the online speech recognition ? (Y/N)")
+
+    print("------------------ \n Test speech recognition offline. \n --------------------")
+    raw_input("To test the offline speech recognition, please say one of the names in the list (which will appear later) when the mic will listen. To run the test, press Enter")
+    instance_client.vocal_detection("Offline")
+    response = raw_input("Do you want to test one more time the offline speech recognition ? (Y/N)")
+    while response =="Y" or response == "y":
+        response = None
+        instance_client.vocal_detection('Offline')
+        response = raw_input("Do you want to test one more time the offline speech recognition ? (Y/N)")
