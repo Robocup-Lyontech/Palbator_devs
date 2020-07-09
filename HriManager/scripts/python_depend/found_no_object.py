@@ -8,7 +8,7 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
-class FoundObject:
+class FoundNoObject:
 
     def __init__(self,socket):
         self.socket=socket
@@ -28,18 +28,15 @@ class FoundObject:
         # name = arguments['arguments']['what']
         # pathOnTablet = arguments['arguments']['pathOnTablet']
 
-        location = arguments['arguments']['location']
-
         # name = "Windex"
         # pathOnTablet = "img/objects/windex.png"
 
         dataJsonToSendCurrentView = {
                 "view": js_view_key,
                 "data": {
-                    'textToShow': text,
-                    'location': location
+                    'textToShow': text
                 },
-                "step": arguments,
-                "index": index
+                "step":arguments,
+                "index":index
         }
         self.socket.emit('currentViewToSend',dataJsonToSendCurrentView,broadcast=True)

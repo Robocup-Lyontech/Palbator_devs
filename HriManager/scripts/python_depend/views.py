@@ -22,7 +22,7 @@ from point_to import PointTo
 from find import Find
 from ask_room_to_clean import AskRoomToClean
 from open_door import OpenDoor
-from found_object import FoundObject
+from find_object import FindObject
 from catch_object import CatchObject
 from store_object import StoreObject
 from release_object import ReleaseObject
@@ -32,6 +32,7 @@ from found_guest import FoundGuest
 from found_anyone import FoundAnyone
 from look_for_known_guest import LookForKnownGuest
 from main_menu_palbator import MainMenuPalbator
+from found_no_object import FoundNoObject
 
 class Views:
     def __init__(self,socket):
@@ -64,7 +65,7 @@ class Views:
             'find': Find,
             'askRoom': AskRoomToClean,
             'openDoor': OpenDoor,
-            'findObject': FoundObject,
+            'findObject': FindObject,
             'catchObject': CatchObject,
             'storeObject': StoreObject,
             'releaseObject': ReleaseObject,
@@ -73,7 +74,8 @@ class Views:
             'foundGuest': FoundGuest,
             'foundAnyone': FoundAnyone,
             'lookForKnownGuest': LookForKnownGuest,
-            'mainMenuPalbator': MainMenuPalbator
+            'mainMenuPalbator': MainMenuPalbator,
+            'foundNoObject': FoundNoObject
         }
         self.view=None
 

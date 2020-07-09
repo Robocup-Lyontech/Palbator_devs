@@ -32,7 +32,7 @@ stt_online: "action_STT_online"
 
 stt_offline: "action_STT_offline"
 
-stt_server: "STT_action_server"
+stt_server_name: "STT_action_server"
 
 tts_mimic: "action_TTS_MIMIC"
 
