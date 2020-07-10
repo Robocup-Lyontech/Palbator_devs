@@ -313,6 +313,9 @@ class HRIManager:
         elif which_step_action == 'goTo':
           self.dynamic_view(goal['stepIndex'],goal['data'])
 
+        elif which_step_action == "foundGuest":
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
         else:
           self.static_view(goal['stepIndex'])
       
@@ -334,7 +337,9 @@ class HRIManager:
 
         elif which_step_action == 'objectAction':
           self.dynamic_view(goal['stepIndex'],goal['data'])
-
+        
+        elif which_step_action == "showVideo":
+          self.dynamic_view(goal['stepIndex'],goal['data'])
 
         else:
           self.static_view(goal['stepIndex'])
@@ -549,6 +554,11 @@ class HRIManager:
         self.currentStep['arguments']['who']['guestPhotoPath'] = data[key]['guestPhotoPath']
         self.currentStep['arguments']['who']['age'] = str(data[key]['age'])
 
+      elif self.currentAction == 'foundGuest':
+        for key in data.keys():
+          if key == self.currentStep['arguments']['who']:
+            self.currentStep['arguments']['guestPhotoPath'] = data[key]
+      
       elif self.currentAction == "lookForKnownGuest":
         key=self.currentStep['arguments']['key']
         self.currentStep['speech']['said']=self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
@@ -640,7 +650,11 @@ class HRIManager:
         rospy.logwarn("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.currentStep))
         rospy.logwarn("------------------------")
 
-
+      elif self.currentAction == "showVideo":
+        for item in data:
+          if item['id'] == self.currentStep['arguments']['videoId']:
+            self.currentStep['arguments']['videoPath'] = item['pathOnTablet']
+            self.currentStep['arguments']['videoFormat'] = item['format']
 
       self.load_view_with_action()
 

@@ -27,7 +27,10 @@ class ShowVideo:
         # speech = arg_fetcher.get_argument(args, 'speech')
         
         text = arguments['speech']['title']
-        desc = arguments['arguments']['description']
+        desc = arguments['speech']['description']
+
+        path = arguments['arguments']['videoPath']
+        videoFormat = arguments['arguments']['videoFormat']
         if desc:
             desc = desc.split(';')
         else:
@@ -42,7 +45,10 @@ class ShowVideo:
                         'description': desc
                     },
                     # 'video': arg_fetcher.get_argument(args, 'video')
-                    'video': videos
+                    'video': {
+                        "pathOnTablet": path,
+                        "format": videoFormat
+                    }
                 },
                 "step":arguments,
                 "index":index

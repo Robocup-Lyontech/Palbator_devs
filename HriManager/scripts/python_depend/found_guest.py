@@ -16,14 +16,14 @@ class FoundGuest:
         
         text = arguments['speech']['title']
         who = arguments['arguments']['who']
-        pathOnTablet = arguments['arguments']['pathOnTablet']
+        guestPhotoPath = arguments['arguments']['guestPhotoPath']
 
         dataJsonToSendCurrentView = {
                 "view": js_view_key,
                 "data": {
                     'textToShow': text,
                     'who': who,
-                    'pathOnTablet': pathOnTablet
+                    'guestPhotoPath': guestPhotoPath
                 },
                 "step":arguments,
                 "index":index
