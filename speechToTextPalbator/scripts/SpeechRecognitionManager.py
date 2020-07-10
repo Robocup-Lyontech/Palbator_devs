@@ -416,7 +416,12 @@ class SpeechRecognitionManager():
         self.test_mode = rospy.get_param("~test_mode")
 
         if not self.test_mode:
-            self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+            try:
+                socket_ip = rospy.get_param("~socketIO_ip")
+                socket_port = rospy.get_param("~socketIO_port")
+                self.socketIO = SocketIO(socket_ip, socket_port, LoggingNamespace)
+            except:
+                self.socketIO = None
         else:
             self.socketIO = None
 
