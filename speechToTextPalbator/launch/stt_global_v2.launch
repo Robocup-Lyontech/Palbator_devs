@@ -9,7 +9,7 @@
     Node for handling jsgf grammar mode
     -->
 	<node
-		name="stt_manager"
+		name="SpeechRecognitionManager"
 		pkg="speechToTextPalbator"
 		type="SpeechRecognitionManager.py"
         output="screen"

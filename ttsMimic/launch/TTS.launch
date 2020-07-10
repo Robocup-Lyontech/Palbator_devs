@@ -10,7 +10,7 @@
     Node for handling jsgf grammar mode
     -->
 	<node
-		name="tts_server"
+		name="SpeechSynthesisManager"
 		pkg="ttsMimic"
 		type="ttsMimicActionServer.py"
         output="screen"
