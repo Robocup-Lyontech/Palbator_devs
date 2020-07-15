@@ -9,7 +9,7 @@
 
  public <cleanupRule> = [<action>] [<the>] <room> | <confirmation>;
 
- <room> = BEDROOM | ENTRANCE | KITCHEN | LIVING ROOM;
+ <room> = BEDROOM | ENTRANCE | KITCHEN | LIVING ROOM | DINING ROOM;
 
  <action> = GO TO | YOU HAVE TO GO TO;
 
