@@ -341,14 +341,17 @@ class HRIManager:
         elif which_step_action == "showVideo":
           self.dynamic_view(goal['stepIndex'],goal['data'])
 
+        elif which_step_action == "askRoom":
+          self.load_multiple_views(goal['stepIndex'],procedure_type='chooseRoom', data=goal['data'])
+
         else:
           self.static_view(goal['stepIndex'])
 
       else:
-        if 'Ask room' in which_step_name:
-          self.load_multiple_views(goal['stepIndex'],procedure_type='chooseRoom')
-        else:
-          self.static_view(goal['stepIndex'])
+        # if 'Ask room' in which_step_name:
+        #   self.load_multiple_views(goal['stepIndex'],procedure_type='chooseRoom')
+        # else:
+        self.static_view(goal['stepIndex'])
 
   def action_GmToHri_callback(self,goal):
     """
@@ -716,6 +719,9 @@ class HRIManager:
         if "drink" in self.currentStep['name']:
           speech=speech.format(name=str(self.nameToUse[-1]))
 
+        if self.currentAction == 'askRoom':
+          self.currentStep['arguments']['rooms'] = data
+
       self.currentStep['speech']['said'] = speech
       self.currentStep['speech']['title'] = title
       
@@ -768,7 +774,7 @@ class HRIManager:
         }
 
 
-  def load_multiple_views(self,indexStep,procedure_type):
+  def load_multiple_views(self,indexStep,procedure_type, data=None):
     """
         A sequence of views is loaded by HRI without GeneralManager's intervention.
 
@@ -776,6 +782,8 @@ class HRIManager:
         :type indexStep: int
         :param procedure_type: name of the loaded sequence 
         :type procedure_type: string 
+        :param data: additional data for the steps
+        :type data: string
     """
     
     rospy.logwarn("{class_name} : STARTING PROCEDURE VIEW : ".format(class_name=self.__class__.__name__)+procedure_type)
@@ -801,7 +809,10 @@ class HRIManager:
         index_procedure=index_procedure+1
         rospy.logwarn("{class_name} : NEXT PROCEDURE INDEX ".format(class_name=self.__class__.__name__)+str(index_procedure))
       else:
-        self.dynamic_view(index_procedure,data=None,wait_for_event=True,in_procedure=True)
+        if self.currentAction == 'askRoom':
+          self.dynamic_view(index_procedure,data=data,wait_for_event=True,in_procedure=True)
+        else:
+          self.dynamic_view(index_procedure,data=None,wait_for_event=True,in_procedure=True)
 
         if self.currentAction == 'confirm':
           if self.dataToUse=='false' or self.dataToUse=='NO':

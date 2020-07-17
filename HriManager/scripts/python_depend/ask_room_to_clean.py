@@ -7,8 +7,8 @@ from flask_cors import CORS, cross_origin
 import os 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-with open(dir_path+'/../templates/public/json/locations_clean_up.json') as p:
-    rooms = json.load(p)
+# with open(dir_path+'/../templates/public/json/locations_clean_up.json') as p:
+#     rooms = json.load(p)
 
 
 class AskRoomToClean:
@@ -19,7 +19,7 @@ class AskRoomToClean:
     def start(self,js_view_key, arguments, index, dataToUse):
 
         text = arguments['speech']['title']
-
+        rooms = arguments['arguments']['rooms']
 
         
         dataJsonToSendCurrentView = {
