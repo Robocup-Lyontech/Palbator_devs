@@ -646,11 +646,11 @@ class HRIManager:
 
       elif self.currentAction == 'objectAction':
         # rospy.logerr("DATA : %s",str(data))
-        for key in data.keys():
-          self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
-          self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
-          self.currentStep['arguments']['object']['name'] = self.currentStep['arguments']['object']['name'].replace(key+"_name",data[key]['name'])
-          self.currentStep['arguments']['object']['pathOnTablet'] = self.currentStep['arguments']['object']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
+        key = self.currentStep['arguments']['what']
+        self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
+        self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['object']['name'] = self.currentStep['arguments']['object']['name'].replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['object']['pathOnTablet'] = self.currentStep['arguments']['object']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
 
         rospy.logwarn("------------------------")
         rospy.logwarn("{class_name} : ".format(class_name=self.__class__.__name__)+str(self.currentStep))
