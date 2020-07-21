@@ -336,7 +336,10 @@ class HRIManager:
           self.dynamic_view(goal['stepIndex'],goal['data'])
 
         elif which_step_action == 'objectAction':
-          self.dynamic_view(goal['stepIndex'],goal['data'])
+          if self.stepsList[goal['stepIndex']]['arguments']['help_mode'] == True:
+            self.load_multiple_views(goal['stepIndex'],procedure_type='objectAction', data=goal['data'])
+          else:
+            self.dynamic_view(goal['stepIndex'],goal['data'])
         
         elif which_step_action == "showVideo":
           self.dynamic_view(goal['stepIndex'],goal['data'])
@@ -811,6 +814,8 @@ class HRIManager:
       else:
         if self.currentAction == 'askRoom':
           self.dynamic_view(index_procedure,data=data,wait_for_event=True,in_procedure=True)
+        elif self.currentAction == 'objectAction':
+          self.dynamic_view(index_procedure,data=data,wait_for_event=False,in_procedure=True)
         else:
           self.dynamic_view(index_procedure,data=None,wait_for_event=True,in_procedure=True)
 
@@ -832,6 +837,16 @@ class HRIManager:
             index_procedure=index_procedure+1
             if procedure_type == 'chooseRoom':
               end_procedure=True
+        
+        elif self.currentAction == 'confirmObjectAction':
+          if self.dataToUse=='false' or self.dataToUse=='NO':
+              rospy.loginfo("{class_name} : RECEIVED DATA -> FALSE".format(class_name=self.__class__.__name__))
+              index_procedure=index_procedure-1
+              self.loaded_steps = self.loaded_steps-2
+          elif self.dataToUse=='true' or self.dataToUse=='YES':
+            rospy.loginfo("{class_name} : RECEIVED DATA -> TRUE".format(class_name=self.__class__.__name__))
+            index_procedure=index_procedure+1
+            end_procedure=True
         
         else:
           if self.currentAction == 'askRoom':
@@ -876,6 +891,24 @@ class HRIManager:
           "age": self.choosenAge
         }
       }
+    
+    elif procedure_type == 'objectAction':
+      if "taken" in self.currentStep['name']:
+        self.json_for_GM = {
+          "indexStep": self.index-1,
+          "actionName": self.currentAction,
+          "dataToUse": self.dataToUse,
+          "NextToDo": "next",
+          "NextIndex": self.index
+        }
+      elif "stored" in self.currentStep['name']:
+        self.json_for_GM = {
+          "indexStep": self.index-1,
+          "actionName": self.currentAction,
+          "dataToUse": self.dataToUse,
+          "NextToDo": "next",
+          "NextIndex": self.index + 1
+        }
     rospy.loginfo("{class_name} : END PROCEDURE ".format(class_name=self.__class__.__name__)+str(procedure_type))
 
   

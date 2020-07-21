@@ -33,6 +33,7 @@ from found_anyone import FoundAnyone
 from look_for_known_guest import LookForKnownGuest
 from main_menu_palbator import MainMenuPalbator
 from found_no_object import FoundNoObject
+from confirm_object_action import ConfirmObjectAction
 
 class Views:
     def __init__(self,socket):
@@ -75,7 +76,8 @@ class Views:
             'foundAnyone': FoundAnyone,
             'lookForKnownGuest': LookForKnownGuest,
             'mainMenuPalbator': MainMenuPalbator,
-            'foundNoObject': FoundNoObject
+            'foundNoObject': FoundNoObject,
+            'confirmObjectAction': ConfirmObjectAction
         }
         self.view=None
 
