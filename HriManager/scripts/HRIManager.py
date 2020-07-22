@@ -680,7 +680,7 @@ class HRIManager:
             "actionName": self.currentAction,
             "scenario": self.choosen_scenario,
             "NextToDo": "next",
-            "NextIndex": self.index+1
+            "NextIndex": self.index
           }
         elif self.currentAction == 'goTo':
           self.json_for_GM={
@@ -718,6 +718,14 @@ class HRIManager:
         elif "name" in self.currentStep['name']:
           speech=speech.format(name=self.choosenName)
           title=title.format(name=self.choosenName)
+
+      elif self.currentAction == 'confirmObjectAction':
+        key = self.currentStep['arguments']['what']
+        speech = speech.replace(key+"_name",data[key]["name"])
+        title = title.replace(key+"_name",data[key]['name'])
+        self.currentStep['arguments']['object']['name'] = data[key]['name']
+        self.currentStep['arguments']['object']['pathOnTablet'] = data[key]['pathOnTablet']
+
       else:
         if "drink" in self.currentStep['name']:
           speech=speech.format(name=str(self.nameToUse[-1]))
@@ -923,6 +931,9 @@ class HRIManager:
       "scenario": self.choosen_scenario,
       "connection_state": None
     }
+
+    if json_goal['action'] == 'confirmObjectAction':
+      json_goal['action'] = 'confirm'
 
     if self.connection_ON:
       json_goal['connection_state'] = "Online"

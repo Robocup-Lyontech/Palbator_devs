@@ -56,7 +56,6 @@ class Views:
             'findWhoWantsDrinks': None,
             'generic': Generic,
             'goTo': GoTo, # textToPrint
-            'openDoor': None,
             'presentPerson': PresentPerson, # textToPrint, people: {who: {name, drinkId}, to: {name, drinkId}}
             'seatGuest': SeatGuest, # 
             'serveDrinks': None,
