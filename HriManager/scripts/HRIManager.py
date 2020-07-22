@@ -824,6 +824,9 @@ class HRIManager:
           self.dynamic_view(index_procedure,data=data,wait_for_event=True,in_procedure=True)
         elif self.currentAction == 'objectAction':
           self.dynamic_view(index_procedure,data=data,wait_for_event=False,in_procedure=True)
+        elif self.currentAction == 'confirmObjectAction':
+          self.dynamic_view(index_procedure,data=data,wait_for_event=True,in_procedure=True)
+        
         else:
           self.dynamic_view(index_procedure,data=None,wait_for_event=True,in_procedure=True)
 
