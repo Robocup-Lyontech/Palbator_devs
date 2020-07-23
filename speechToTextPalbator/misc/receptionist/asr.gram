@@ -18,7 +18,7 @@ public <rule> = <confirmation> | [<presentationAge>] <age> | [<presentationName>
 
 <name> = CLARA | BILL | JACK | AMY | ROSE | JOHN | MATT | NEO | RORY | SALLY;
 
-<drink> = OASIS | PEPSI | COKE | DOCTOR PEPPER | SCHWEPPES | FANTA | 7UP | ORANGINA | ICE TEA | SPRITE;
+<drink> = OASIS | PEPSI | COKE | DOCTOR PEPPER | SCHWEPPS | FANTA | 7UP | ORANGINA | ICE TEA | SPRITE;
 
 <age> = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | 90 |
