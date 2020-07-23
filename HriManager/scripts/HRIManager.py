@@ -499,6 +499,8 @@ class HRIManager:
       self.load_step_without_action()
     else:
       self.load_view_with_action()
+      speech = self.currentStep['speech']['said']
+      self.tts_action(speech)
 
     if self.currentStep['name'] != 'Finish Scenario':
       self.json_for_GM={
@@ -663,6 +665,8 @@ class HRIManager:
             self.currentStep['arguments']['videoFormat'] = item['format']
 
       self.load_view_with_action()
+      speech = self.currentStep['speech']['said']
+      self.tts_action(speech)
 
       if self.currentAction == 'findObject':
         self.json_for_GM={

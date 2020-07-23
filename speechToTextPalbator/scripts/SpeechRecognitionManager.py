@@ -286,10 +286,10 @@ class AudioThread(Thread):
         self.load_database()
 
         if self.enable_detection:
-
+            self.tts_action(self.goal['speech'])
             ##### RECORDING #######
             with self.micro as source:
-                self.tts_action(self.goal['speech'])
+                
                 if not self.socketIO is None:
                     json_mic ={
                         "hide": False
