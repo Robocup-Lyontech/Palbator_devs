@@ -15,6 +15,7 @@ from sphinxbase.sphinxbase import *
 import pyaudio
 import wave
 import datetime
+import ttsMimic.msg
 
 
 
@@ -43,6 +44,24 @@ class AudioThread(Thread):
         self.success = False
 
         self.socketIO = socketIO
+
+        _tts_mimic_server_name = rospy.get_param("~tts_server_name")
+        self.client_TTS=actionlib.SimpleActionClient(_tts_mimic_server_name,ttsMimic.msg.TtsMimicAction)
+        rospy.loginfo("{class_name} : Waiting for TTS server...".format(class_name=self.__class__.__name__))
+        self.client_TTS.wait_for_server()
+        rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
+
+
+    def tts_action(self,speech):
+        """
+            Send the speech to say to the TTS ActionServer
+
+            :param speech: text to say
+            :type speech: string
+        """
+        self.goal_TTS=ttsMimic.msg.TtsMimicGoal(speech)
+        self.client_TTS.send_goal(self.goal_TTS)
+        self.client_TTS.wait_for_result()
 
     def setup_params_for_offline(self):
         """
@@ -270,6 +289,7 @@ class AudioThread(Thread):
 
             ##### RECORDING #######
             with self.micro as source:
+                self.tts_action(self.goal['speech'])
                 if not self.socketIO is None:
                     json_mic ={
                         "hide": False

@@ -465,8 +465,8 @@ class HRIManager:
     self.view_launcher.start(self.currentStep['action'],self.currentStep, self.currentStep['order'], self.dataToUse)
     rospy.loginfo("{class_name} : CHARGEMENT VUE SOUS ETAPE:".format(class_name=self.__class__.__name__)+self.currentStep['name'] +" SUR TABLETTE")
 
-    speech=deepcopy(self.currentStep['speech']['said'])
-    self.tts_action(speech)
+    # speech=deepcopy(self.currentStep['speech']['said'])
+    # self.tts_action(speech)
     
 
   def static_view(self,stepIndex):
@@ -746,17 +746,17 @@ class HRIManager:
         # elif self.connection_ON==False:
         #   self.routine_offline()
         for i in range(0,5):
-          if i == 1:
-            self.tts_action("Could you repeat please ?")
-          elif i == 2:
-            self.tts_action("Say it again please?")
-          elif i == 3:
-            self.tts_action("Sorry I missed that. Could you repeat please ?")
-          elif i == 4:
-            self.tts_action("I couldn't understand. Please try again.")
+          # if i == 1:
+          #   self.tts_action("Could you repeat please ?")
+          # elif i == 2:
+          #   self.tts_action("Say it again please?")
+          # elif i == 3:
+          #   self.tts_action("Sorry I missed that. Could you repeat please ?")
+          # elif i == 4:
+          #   self.tts_action("I couldn't understand. Please try again.")
 
           rospy.loginfo("{class_name} : intent %s".format(class_name=self.__class__.__name__),str(i))
-          data_STT = self.vocal_detection()
+          data_STT = self.vocal_detection(i)
           if not data_STT is None:
             if data_STT == 'EVENT_REQUEST':
               break
@@ -771,6 +771,8 @@ class HRIManager:
           self.event_touch = False
 
       else:
+        speech=deepcopy(self.currentStep['speech']['said'])
+        self.tts_action(speech)
         while self.event_touch == False:
           self.socketIO.wait(0.1)
         self.event_touch = False
@@ -923,7 +925,7 @@ class HRIManager:
     rospy.loginfo("{class_name} : END PROCEDURE ".format(class_name=self.__class__.__name__)+str(procedure_type))
 
   
-  def vocal_detection(self):
+  def vocal_detection(self,i):
     rospy.loginfo("{class_name} : ----------- DEBUT DETECTION VOCALE--------------------------------".format(class_name=self.__class__.__name__))
 
     goal_stt = SpeechRecognitionGoal()
@@ -932,8 +934,26 @@ class HRIManager:
       "order": self.index,
       "action": self.currentAction,
       "scenario": self.choosen_scenario,
-      "connection_state": None
+      "connection_state": None,
+      "speech": None
     }
+
+    if i == 0:
+      json_goal["speech"] = self.currentStep['speech']['said']
+
+    elif i == 1:
+      json_goal['speech'] = "Could you repeat please ?"
+
+    elif i == 2:
+      json_goal['speech'] = "Say it again please?"
+
+    elif i == 3:
+      json_goal['speech'] = "Sorry I missed that. Could you repeat please ?"
+
+    elif i == 4:
+      json_goal['speech'] = "I couldn't understand. Please try again."
+
+
 
     if json_goal['action'] == 'confirmObjectAction':
       json_goal['action'] = 'confirm'
