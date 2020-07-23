@@ -30,11 +30,14 @@ class LookForGuest:
         # location = arg_fetcher.get_argument(args, 'location')
 
         text = arguments['speech']['title']
+        time = arguments['arguments']['time']
+
 
         dataJsonToSendCurrentView = {
                 "view": js_view_key,
                 "data": {
-                    'textToShow': text
+                    'textToShow': text,
+                    'time': time
                 },
                 "step":arguments,
                 "index":index
