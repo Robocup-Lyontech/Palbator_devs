@@ -19,7 +19,7 @@ git clone https://github.com/MycroftAI/mimic.git
 cd mimic
 ./autogen.sh
 ./configure --prefix="/usr/local"
-make -j4
+make -j`nproc`
 make check
 sudo make install
 ```
