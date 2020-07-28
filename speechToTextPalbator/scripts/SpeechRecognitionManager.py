@@ -45,11 +45,14 @@ class AudioThread(Thread):
 
         self.socketIO = socketIO
 
-        _tts_mimic_server_name = rospy.get_param("~tts_server_name")
-        self.client_TTS=actionlib.SimpleActionClient(_tts_mimic_server_name,ttsMimic.msg.TtsMimicAction)
-        rospy.loginfo("{class_name} : Waiting for TTS server...".format(class_name=self.__class__.__name__))
-        self.client_TTS.wait_for_server()
-        rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
+        self.test_mode = rospy.get_param("~test_mode")
+
+        if not self.test_mode:
+            _tts_mimic_server_name = rospy.get_param("~tts_server_name")
+            self.client_TTS=actionlib.SimpleActionClient(_tts_mimic_server_name,ttsMimic.msg.TtsMimicAction)
+            rospy.loginfo("{class_name} : Waiting for TTS server...".format(class_name=self.__class__.__name__))
+            self.client_TTS.wait_for_server()
+            rospy.loginfo("{class_name} : TTS server connected".format(class_name=self.__class__.__name__))
 
 
     def tts_action(self,speech):
@@ -286,7 +289,8 @@ class AudioThread(Thread):
         self.load_database()
 
         if self.enable_detection:
-            self.tts_action(self.goal['speech'])
+            if not self.test_mode:
+                self.tts_action(self.goal['speech'])
             ##### RECORDING #######
             with self.micro as source:
                 
