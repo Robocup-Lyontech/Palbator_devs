@@ -2,14 +2,14 @@
 
 ## Dependencies for MULTIPLEXER (FLASK server)
 ```bash
-Sudo apt-get install python3-dev python3-pip python-eventlet
-Sudo pip install flask flask-socketio
-Sudo pip install -U flask-cors
+sudo apt-get install python3-dev python3-pip python-eventlet
+sudo pip install flask flask-socketio
+sudo pip install -U flask-cors
 ```
 
 ## Dependencies for HRI MANAGER (FLASK client)
 ```bash
-Sudo pip install -U socketIO-client
+sudo pip install -U socketIO-client
 ```
 
 ## Dependencies for ttsMimic
