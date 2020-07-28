@@ -30,7 +30,7 @@ You can try Mimic using the command line : mimic -t "Hello world"
 - sudo apt-get install -y python python-dev python-pip build-essential swig libpulse-dev git
 - sudo pip install pyttsx3
 - sudo apt-get install libasound-dev
-- sudo apt-get install python-pyaudio
+- sudo apt-get install portaudio19-dev python-all-dev python3-all-dev && sudo pip install pyaudio
 - sudo apt-get install swig
 - sudo pip install pocketsphinx
 
