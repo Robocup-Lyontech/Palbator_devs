@@ -15,6 +15,9 @@ sudo pip install -U socketIO-client
 ## Dependencies for ttsMimic
 ```bash
 sudo apt-get install gcc make pkg-config automake libtool libicu-dev libpcre2-dev libasound2-dev git
+```
+In a folder away from your workspace :
+```bash
 git clone https://github.com/MycroftAI/mimic.git
 cd mimic
 ./autogen.sh
