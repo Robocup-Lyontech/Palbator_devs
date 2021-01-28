@@ -42,6 +42,8 @@ sudo pip uninstall pyaudio or sudo apt-get purge --auto-remove python-pyaudio
 sudo apt-get install portaudio19-dev python-all-dev python3-all-dev && sudo pip install pyaudio
 ```
 
-## Dependencies for JSONDecodeError lib not included in JSON
+## Temporary fix for JSONDecodeError lib not included in JSON (due to new flask-socketIO version and required dependencies)
+```bash
+sudo pip install 'python-engineio<3.14' --upgrade
+```
 
-sudo pip install simplejson
