@@ -41,3 +41,7 @@ If there are issues with pyaudio (version problems), those command lines could s
 sudo pip uninstall pyaudio or sudo apt-get purge --auto-remove python-pyaudio
 sudo apt-get install portaudio19-dev python-all-dev python3-all-dev && sudo pip install pyaudio
 ```
+
+## Dependencies for JSONDecodeError lib not included in JSON
+
+sudo pip install simplejson
