@@ -12,7 +12,7 @@ export default class SpeakableButton extends React.Component {
         super(props);
         this.state = {
             response: false,
-            socket: socketIOClient("http://127.0.0.1:5000"),
+            socket: socketIOClient("http://127.0.0.1:5001"),
         };
         // Cette liaison est nécéssaire afin de permettre
         // l'utilisation de `this` dans la fonction de rappel.

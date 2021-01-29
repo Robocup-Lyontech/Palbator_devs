@@ -7,7 +7,7 @@ class Test():
     def __init__(self):
 
 
-        self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+        self.socketIO = SocketIO('http://127.0.0.1', 5001, LoggingNamespace)
 
         json_data = {
             "people_list": [

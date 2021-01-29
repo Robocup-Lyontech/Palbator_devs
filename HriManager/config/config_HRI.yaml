@@ -1,7 +1,7 @@
 ###### SOCKET PARAMETERS ######
 socketIO_IP: 'http://127.0.0.1'
 
-socketIO_port: 5000
+socketIO_port: 5001
 
 socket_choose_scenario: 'askToChangeScenarioHRIM'
 

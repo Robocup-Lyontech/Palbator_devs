@@ -826,7 +826,7 @@ class HRIManager:
 if __name__ == '__main__':
   
   
-  socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+  socketIO = SocketIO('http://127.0.0.1', 5001, LoggingNamespace)
   hri=HRIManager(socketIO)
 
 

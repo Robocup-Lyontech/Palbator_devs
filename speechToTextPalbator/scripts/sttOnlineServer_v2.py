@@ -18,7 +18,7 @@ class SpeechToTextOnline(object):
     def __init__(self):
         rospy.init_node("STT_online_node")
 
-        self.socketIO = SocketIO('http://127.0.0.1', 5000, LoggingNamespace)
+        self.socketIO = SocketIO('http://127.0.0.1', 5001, LoggingNamespace)
 
 
         if rospy.has_param("~stt_online_server_name"):

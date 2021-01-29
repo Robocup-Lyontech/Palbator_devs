@@ -9,7 +9,7 @@ export default class Home extends Component {
         super();
         this.state = {
           response: false,
-          endpoint: "http://127.0.0.1:5000"
+          endpoint: "http://127.0.0.1:5001"
         };
       }
     //   componentDidMount() {
@@ -25,7 +25,7 @@ export default class Home extends Component {
         //     <script type="text/javascript" charset="utf-8">
 
         //         $(document).ready(function() {
-        //         var socket = io.connected('http:127.0.0.1:5000');
+        //         var socket = io.connected('http:127.0.0.1:5001');
 
         //         socket.on('connect', function () {
         //             socket.emit('my event', { data: 'I\'m connected!' })
