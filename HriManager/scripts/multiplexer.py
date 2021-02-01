@@ -125,5 +125,6 @@ def handle_my_custom_event(json):
 if __name__ == '__main__':
     # app.config.from_object('configurations.DevelopmentConfig')
     app.config.from_object(DevelopmentConfig)
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')
+    #socketio.run(app)
 
