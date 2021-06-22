@@ -356,6 +356,36 @@ class HRIManager:
         # else:
         self.static_view(goal['stepIndex'])
 
+    elif scenario == 'CPETest_scenario':
+      if which_step_action != '':
+        
+        if which_step_action == 'goTo':
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
+        elif which_step_action == 'findObject':
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
+        elif which_step_action == 'objectAction':
+          if self.stepsList[goal['stepIndex']]['arguments']['help_mode'] == True:
+            self.load_multiple_views(goal['stepIndex'],procedure_type='objectAction', data=goal['data'])
+          else:
+            self.dynamic_view(goal['stepIndex'],goal['data'])
+        
+        elif which_step_action == "showVideo":
+          self.dynamic_view(goal['stepIndex'],goal['data'])
+
+        elif which_step_action == "askRoom":
+          self.load_multiple_views(goal['stepIndex'],procedure_type='chooseRoom', data=goal['data'])
+
+        else:
+          self.static_view(goal['stepIndex'])
+
+      else:
+        # if 'Ask room' in which_step_name:
+        #   self.load_multiple_views(goal['stepIndex'],procedure_type='chooseRoom')
+        # else:
+        self.static_view(goal['stepIndex'])
+
   def action_GmToHri_callback(self,goal):
     """
         Callback function for ActionServer HRI. Receive a goal and load the correct view according its step index.
@@ -639,6 +669,13 @@ class HRIManager:
           self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
           self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
 
+        elif self.choosen_scenario == "CPETest_scenario":
+          key = self.currentStep['arguments']['where']
+          self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])
+          self.currentStep['speech']['title'] = self.currentStep['speech']['title'].replace(key+"_name",data[key]['name'])
+          self.currentStep['arguments']['location']['name'] = self.currentStep['arguments']['location']['name'].replace(key+"_name",data[key]['name'])
+          self.currentStep['arguments']['location']['pathOnTablet'] = self.currentStep['arguments']['location']['pathOnTablet'].replace(key+"_pathOnTablet",data[key]['pathOnTablet'])
+      
       elif self.currentAction == 'findObject':
         key = self.currentStep['arguments']['what']
         self.currentStep['speech']['said'] = self.currentStep['speech']['said'].replace(key+"_name",data[key]['name'])

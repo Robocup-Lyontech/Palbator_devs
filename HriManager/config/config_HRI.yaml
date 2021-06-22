@@ -52,5 +52,9 @@ list_scenario_available : [
     {
         "id": "Clean Up",
         "name": "CleanUp2020CPEScenario"
+    },
+    {
+        "id": "CPETest",
+        "name": "CPETest_scenario"
     }
 ]
